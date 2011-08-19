@@ -50,9 +50,6 @@
           x: e.pageX - @canvas.offset().left
           y: e.pageY - @canvas.offset().top
           event: e.type
-          color: @color
-          size: @size
-          tool: @tool
         @redraw()
 
     redraw: ->
@@ -61,29 +58,6 @@
       $.each @actions, ->
         $.sketch.tools[this.tool].draw.call sketch, this
       $.sketch.tools[@action.tool].draw.call sketch, @action if @painting
-
-  $.fn.sketch = (opts)->
-    $.error('Sketch can only be called on one element at a time.') if this.length > 1
-    
-    this.data('sketch', new Sketch(this.get(0), opts))
-
-    this.bind 'sketch.changecolor', (e, color)->
-      $el.data 'sketch.color', color
-
-    this.mousedown this.data('sketch').onEvent
-    this.mousemove this.data('sketch').onEvent
-    this.mouseup this.data('sketch').onEvent
-    this.mouseleave this.data('sketch').onEvent
-
-    that = this
-    if this.data('sketch').options.toolLinks
-      $('body').delegate "a[href=\"##{that.attr('id')}\"]", 'click', (e)->
-        $this = $(this)
-        if $this.attr('data-color')
-          that.trigger 'sketch.changecolor', $(this).attr('data-color')
-        false
-
-    this
 
   $.sketch.tools.marker =
     draw: (action)->
@@ -104,4 +78,25 @@
         @context.stroke()
 
         previous = event
+
+  $.fn.sketch = (opts)->
+    $.error('Sketch can only be called on one element at a time.') if this.length > 1
+    
+    this.data('sketch', new Sketch(this.get(0), opts))
+    sketch = this.data('sketch')
+
+    this.bind 'sketch.changecolor', (e, color)->
+      $el.data 'sketch.color', color
+    this.bind 'mousedown mouseup mousemove mouseleave', sketch.onEvent
+
+    that = this
+    if this.data('sketch').options.toolLinks
+      $('body').delegate "a[href=\"##{that.attr('id')}\"]", 'click', (e)->
+        $this = $(this)
+        if $this.attr('data-color')
+          that.trigger 'sketch.changecolor', $(this).attr('data-color')
+        false
+
+    this
+
 )(jQuery)

@@ -53,10 +53,7 @@
           this.action.events.push({
             x: e.pageX - this.canvas.offset().left,
             y: e.pageY - this.canvas.offset().top,
-            event: e.type,
-            color: this.color,
-            size: this.size,
-            tool: this.tool
+            event: e.type
           });
           return this.redraw();
         }
@@ -74,33 +71,7 @@
       };
       return Sketch;
     })();
-    $.fn.sketch = function(opts) {
-      var that;
-      if (this.length > 1) {
-        $.error('Sketch can only be called on one element at a time.');
-      }
-      this.data('sketch', new Sketch(this.get(0), opts));
-      this.bind('sketch.changecolor', function(e, color) {
-        return $el.data('sketch.color', color);
-      });
-      this.mousedown(this.data('sketch').onEvent);
-      this.mousemove(this.data('sketch').onEvent);
-      this.mouseup(this.data('sketch').onEvent);
-      this.mouseleave(this.data('sketch').onEvent);
-      that = this;
-      if (this.data('sketch').options.toolLinks) {
-        $('body').delegate("a[href=\"#" + (that.attr('id')) + "\"]", 'click', function(e) {
-          var $this;
-          $this = $(this);
-          if ($this.attr('data-color')) {
-            that.trigger('sketch.changecolor', $(this).attr('data-color'));
-          }
-          return false;
-        });
-      }
-      return this;
-    };
-    return $.sketch.tools.marker = {
+    $.sketch.tools.marker = {
       draw: function(action) {
         var event, previous, _i, _len, _ref, _results;
         this.context.lineJoin = "round";
@@ -124,6 +95,30 @@
         }
         return _results;
       }
+    };
+    return $.fn.sketch = function(opts) {
+      var sketch, that;
+      if (this.length > 1) {
+        $.error('Sketch can only be called on one element at a time.');
+      }
+      this.data('sketch', new Sketch(this.get(0), opts));
+      sketch = this.data('sketch');
+      this.bind('sketch.changecolor', function(e, color) {
+        return $el.data('sketch.color', color);
+      });
+      this.bind('mousedown mouseup mousemove mouseleave', sketch.onEvent);
+      that = this;
+      if (this.data('sketch').options.toolLinks) {
+        $('body').delegate("a[href=\"#" + (that.attr('id')) + "\"]", 'click', function(e) {
+          var $this;
+          $this = $(this);
+          if ($this.attr('data-color')) {
+            that.trigger('sketch.changecolor', $(this).attr('data-color'));
+          }
+          return false;
+        });
+      }
+      return this;
     };
   })(jQuery);
 }).call(this);
