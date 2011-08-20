@@ -53,7 +53,9 @@
         };
       };
       Sketch.prototype.stopPainting = function() {
-        this.actions.push(this.action);
+        if (this.action) {
+          this.actions.push(this.action);
+        }
         this.painting = false;
         this.action = null;
         return this.redraw();
@@ -78,8 +80,12 @@
             this.stopPainting();
         }
         if (this.painting) {
-          mouseX = e.touches ? e.touches[0].pageX : e.pageX;
-          mouseY = e.touches ? e.touches[0].pageY : e.pageY;
+          if (e.targetTouches && e.targetTouches.length > 1) {
+            this.stopPainting();
+            return;
+          }
+          mouseX = e.targetTouches ? e.targetTouches[0].pageX : e.pageX;
+          mouseY = e.targetTouches ? e.targetTouches[0].pageY : e.pageY;
           this.action.events.push({
             x: mouseX - this.canvas.offset().left,
             y: mouseY - this.canvas.offset().top,
@@ -96,7 +102,7 @@
         $.each(this.actions, function() {
           return $.sketch.tools[this.tool].draw.call(sketch, this);
         });
-        if (this.painting) {
+        if (this.painting && this.action) {
           return $.sketch.tools[this.action.tool].draw.call(sketch, this.action);
         }
       };
@@ -104,27 +110,20 @@
     })();
     $.sketch.tools.marker = {
       draw: function(action) {
-        var event, previous, _i, _len, _ref, _results;
+        var event, previous, _i, _len, _ref;
         this.context.lineJoin = "round";
-        previous = null;
+        this.context.lineCap = "round";
+        this.context.beginPath();
+        this.context.moveTo(action.events[0].x, action.events[0].y);
         _ref = action.events;
-        _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           event = _ref[_i];
-          this.context.beginPath();
-          if (previous) {
-            this.context.moveTo(previous.x, previous.y);
-          } else {
-            this.context.moveTo(event.x - 1, event.y);
-          }
           this.context.lineTo(event.x, event.y);
-          this.context.closePath();
-          this.context.strokeStyle = action.color;
-          this.context.lineWidth = action.size;
-          this.context.stroke();
-          _results.push(previous = event);
+          previous = event;
         }
-        return _results;
+        this.context.strokeStyle = action.color;
+        this.context.lineWidth = action.size;
+        return this.context.stroke();
       }
     };
     return $.fn.sketch = function(opts) {

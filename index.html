@@ -30,6 +30,8 @@
         border: 1px solid #acc;
       }
 
+      code { background: #cff; }
+
       #colors_tools a {
         border: 1px solid black; width: 30px; height: 30px; line-height: 30px; vertical-align: middle; text-align: center; text-decoration: none; display: inline-block; color: black; font-weight: bold;
       }
@@ -61,14 +63,18 @@
       <article class='example'>
         <h1>Changing Color/Size</h1>
         
-        <p></p>
+        <p>Sketch.js makes it very easy to create links that function as tool buttons.
+        By default, any link that has a <code>href</code> tag that points to the ID
+        of the converted canvas will automatically be considered a tool link. If the
+        link has a <code>data-color</code> attribute then clicking it will change the color.
+        Similarly, a <code>data-size</code> attribute will change the brush size.</p>
         
         <div class='demo'>
           <div id='colors_tools'></div>
           <canvas id='colors_sketch' width='800' height='300'></canvas>
           <script type='text/javascript'>
             $(function() {
-              $.each(['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#000', '#fff'], function() {
+              $.each(['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#000', '#fff'], function() {
                 $('#colors_tools').append("<a href='#colors_sketch' data-color='" + this + "' style='background: " + this + ";'></a> ");
               });
               $.each([3, 5, 10, 15], function() {

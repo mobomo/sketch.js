@@ -47,7 +47,7 @@
       }
 
     stopPainting: ->
-      @actions.push @action
+      @actions.push @action if @action
       @painting = false
       @action = null
       @redraw()
@@ -65,8 +65,11 @@
           @stopPainting()
       
       if @painting
-        mouseX = if e.touches then e.touches[0].pageX else e.pageX
-        mouseY = if e.touches then e.touches[0].pageY else e.pageY
+        if e.targetTouches && e.targetTouches.length > 1
+          @stopPainting()
+          return
+        mouseX = if e.targetTouches then e.targetTouches[0].pageX else e.pageX
+        mouseY = if e.targetTouches then e.targetTouches[0].pageY else e.pageY
 
         @action.events.push
           x: mouseX - @canvas.offset().left
@@ -80,27 +83,23 @@
       sketch = this
       $.each @actions, ->
         $.sketch.tools[this.tool].draw.call sketch, this
-      $.sketch.tools[@action.tool].draw.call sketch, @action if @painting
+      $.sketch.tools[@action.tool].draw.call sketch, @action if @painting && @action
 
   $.sketch.tools.marker =
     draw: (action)->
       @context.lineJoin = "round"
+      @context.lineCap = "round"
+      @context.beginPath()
       
-      previous = null
+      @context.moveTo action.events[0].x, action.events[0].y
       for event in action.events
-        @context.beginPath()
-        if previous
-          @context.moveTo previous.x, previous.y
-        else
-          @context.moveTo event.x - 1, event.y
-
         @context.lineTo event.x, event.y
-        @context.closePath()
-        @context.strokeStyle = action.color
-        @context.lineWidth = action.size
-        @context.stroke()
 
         previous = event
+      #@context.closePath()
+      @context.strokeStyle = action.color
+      @context.lineWidth = action.size
+      @context.stroke()
 
   $.fn.sketch = (opts)->
     $.error('Sketch can only be called on one element at a time.') if this.length > 1
