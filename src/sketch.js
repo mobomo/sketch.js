@@ -21,6 +21,27 @@
         this.tool = this.options.defaultTool;
         this.actions = [];
         this.action = [];
+        this.canvas.bind('sketch.changecolor', function(e, color) {
+          return $(this).data('sketch').color = color;
+        });
+        this.canvas.bind('sketch.changesize', function(e, size) {
+          return $(this).data('sketch').size = size;
+        });
+        this.canvas.bind('mousedown mouseup mousemove mouseleave touchstart touchmove touchend touchcancel', this.onEvent);
+        if (this.options.toolLinks) {
+          $('body').delegate("a[href=\"#" + (this.canvas.attr('id')) + "\"]", 'click', function(e) {
+            var $canvas, $this;
+            $this = $(this);
+            $canvas = $($this.attr('href'));
+            if ($this.attr('data-color')) {
+              $canvas.trigger('sketch.changecolor', $(this).attr('data-color'));
+            }
+            if ($this.attr('data-size')) {
+              $canvas.trigger('sketch.changesize', parseFloat($(this).attr('data-size')));
+            }
+            return false;
+          });
+        }
       }
       Sketch.prototype.startPainting = function() {
         this.painting = true;
@@ -43,10 +64,13 @@
       Sketch.prototype.addEvent = function(e) {
         switch (e.type) {
           case 'mousedown':
+          case 'touchstart':
             this.startPainting();
             break;
           case 'mouseup':
           case 'mouseout':
+          case 'touchend':
+          case 'touchcancel':
             this.stopPainting();
         }
         if (this.painting) {
@@ -98,28 +122,10 @@
       }
     };
     return $.fn.sketch = function(opts) {
-      var sketch, that;
       if (this.length > 1) {
         $.error('Sketch can only be called on one element at a time.');
       }
       this.data('sketch', new Sketch(this.get(0), opts));
-      sketch = this.data('sketch');
-      this.bind('sketch.changecolor', function(e, color) {
-        return sketch.color = color;
-      });
-      this.bind('mousedown mouseup mousemove mouseleave', sketch.onEvent);
-      that = this;
-      if (sketch.options.toolLinks) {
-        console.log(that);
-        $('body').delegate("a[href=\"#" + (that.attr('id')) + "\"]", 'click', function(e) {
-          var $this;
-          $this = $(this);
-          if ($this.attr('data-color')) {
-            that.trigger('sketch.changecolor', $(this).attr('data-color'));
-          }
-          return false;
-        });
-      }
       return this;
     };
   })(jQuery);

@@ -6,7 +6,7 @@
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script src='src/sketch.js'></script>
     <style type='text/css'>
-      body { font-family: "Open Sans", sans-serif; }
+      body { font-family: "Open Sans", sans-serif; color: #444; }
       h1, h2, h3, h4 { font-family: Yellowtail; font-weight: normal; color: #06a; }
 
       #wrapper { width: 800px; margin: 0 auto; }
@@ -20,6 +20,18 @@
         width: 800px;
         height: 300px;
         border: 1px solid #ccc;
+      }
+
+      pre.source {
+        background: #e5eeee;
+        padding: 10px 20px;
+        width: 760px;
+        overflow-x: auto;
+        border: 1px solid #acc;
+      }
+
+      #colors_tools a {
+        border: 1px solid black; width: 30px; height: 30px; line-height: 30px; vertical-align: middle; text-align: center; text-decoration: none; display: inline-block; color: black; font-weight: bold;
       }
     </style>
   </head>
@@ -37,17 +49,17 @@
         <p>Click and drag in the box below to draw a simple black line.</p>
 
         <div class='demo'>
-        <canvas id='simple_sketch' width='800' height='300'></canvas>
-        <script type='text/javascript'>
-          $(function() {
-            $('#simple_sketch').sketch();
-          });
-        </script>
+          <canvas id='simple_sketch' width='800' height='300'></canvas>
+          <script type='text/javascript'>
+            $(function() {
+              $('#simple_sketch').sketch();
+            });
+          </script>
         </div>
       </article>
 
       <article class='example'>
-        <h1>Color Change</h1>
+        <h1>Changing Color/Size</h1>
         
         <p></p>
         
@@ -56,8 +68,11 @@
           <canvas id='colors_sketch' width='800' height='300'></canvas>
           <script type='text/javascript'>
             $(function() {
-             $.each(['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#000', '#fff'], function() {
-                $('#colors_tools').append("<a href='#colors_sketch' data-color='" + this + "' style='border: 1px solid black; width: 30px; height: 30px; background: " + this + "; display: inline-block;'></a> ");
+              $.each(['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#000', '#fff'], function() {
+                $('#colors_tools').append("<a href='#colors_sketch' data-color='" + this + "' style='background: " + this + ";'></a> ");
+              });
+              $.each([3, 5, 10, 15], function() {
+                $('#colors_tools').append("<a href='#colors_sketch' data-size='" + this + "' style='background: #ccc'>" + this + "</a> ");
               });
               $('#colors_sketch').sketch();
             });
@@ -75,7 +90,8 @@
 
       $('article.example').each(function() {
         $(this).append("<pre class='source'></pre>");
-        $(this).find("pre.source").html(escapeHTML($(this).find("div.demo").html()));
+        var html = $(this).find("div.demo").html().replace(/          /g,"");
+        $(this).find("pre.source").html(escapeHTML(html));
       });
     </script>
   </body>

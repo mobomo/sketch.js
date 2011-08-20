@@ -20,6 +20,23 @@
       @actions = []
       @action = []
 
+      @canvas.bind 'sketch.changecolor', (e, color)->
+        $(this).data('sketch').color = color
+      @canvas.bind 'sketch.changesize', (e, size)->
+        $(this).data('sketch').size = size
+      @canvas.bind 'mousedown mouseup mousemove mouseleave touchstart touchmove touchend touchcancel', @onEvent
+
+      if @options.toolLinks
+        $('body').delegate "a[href=\"##{@canvas.attr('id')}\"]", 'click', (e)->
+          $this = $(this)
+          $canvas = $($this.attr('href'))
+          if $this.attr('data-color')
+            $canvas.trigger 'sketch.changecolor', $(this).attr('data-color')
+          if $this.attr('data-size')
+            $canvas.trigger 'sketch.changesize', parseFloat($(this).attr('data-size'))
+          false
+
+
     startPainting: ->
       @painting = true
       @action = {
@@ -40,9 +57,9 @@
 
     addEvent: (e)->
       switch e.type
-        when 'mousedown'
+        when 'mousedown', 'touchstart'
           @startPainting()
-        when 'mouseup', 'mouseout'
+        when 'mouseup', 'mouseout', 'touchend', 'touchcancel'
           @stopPainting()
       
       if @painting
@@ -82,23 +99,7 @@
 
   $.fn.sketch = (opts)->
     $.error('Sketch can only be called on one element at a time.') if this.length > 1
-    
     this.data('sketch', new Sketch(this.get(0), opts))
-    sketch = this.data('sketch')
-
-    this.bind 'sketch.changecolor', (e, color)->
-      sketch.color = color
-    this.bind 'mousedown mouseup mousemove mouseleave', sketch.onEvent
-
-    that = this
-    if sketch.options.toolLinks
-      console.log that
-      $('body').delegate "a[href=\"##{that.attr('id')}\"]", 'click', (e)->
-        $this = $(this)
-        if $this.attr('data-color')
-          that.trigger 'sketch.changecolor', $(this).attr('data-color')
-        false
-
     this
 
 )(jQuery)
