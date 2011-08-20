@@ -54,6 +54,7 @@
     
     onEvent: (e)->
       $(this).data('sketch').addEvent e
+      false
 
     addEvent: (e)->
       switch e.type

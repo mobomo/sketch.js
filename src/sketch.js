@@ -59,7 +59,8 @@
         return this.redraw();
       };
       Sketch.prototype.onEvent = function(e) {
-        return $(this).data('sketch').addEvent(e);
+        $(this).data('sketch').addEvent(e);
+        return false;
       };
       Sketch.prototype.addEvent = function(e) {
         switch (e.type) {
