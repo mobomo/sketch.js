@@ -27,7 +27,7 @@
         this.canvas.bind('sketch.changesize', function(e, size) {
           return $(this).data('sketch').size = size;
         });
-        this.canvas.bind('mousedown mouseup mousemove mouseleave touchstart touchmove touchend touchcancel', this.onEvent);
+        this.canvas.bind('mousedown mouseup mousemove mouseleave mouseout touchstart touchmove touchend touchcancel', this.onEvent);
         if (this.options.toolLinks) {
           $('body').delegate("a[href=\"#" + (this.canvas.attr('id')) + "\"]", 'click', function(e) {
             var $canvas, $this;
@@ -60,9 +60,11 @@
       };
       Sketch.prototype.onEvent = function(e) {
         $(this).data('sketch').addEvent(e);
+        e.preventDefault();
         return false;
       };
       Sketch.prototype.addEvent = function(e) {
+        var mouseX, mouseY;
         switch (e.type) {
           case 'mousedown':
           case 'touchstart':
@@ -70,14 +72,17 @@
             break;
           case 'mouseup':
           case 'mouseout':
+          case 'mouseleave':
           case 'touchend':
           case 'touchcancel':
             this.stopPainting();
         }
         if (this.painting) {
+          mouseX = e.touches ? e.touches[0].pageX : e.pageX;
+          mouseY = e.touches ? e.touches[0].pageY : e.pageY;
           this.action.events.push({
-            x: e.pageX - this.canvas.offset().left,
-            y: e.pageY - this.canvas.offset().top,
+            x: mouseX - this.canvas.offset().left,
+            y: mouseY - this.canvas.offset().top,
             event: e.type
           });
           return this.redraw();

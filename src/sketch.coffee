@@ -24,7 +24,7 @@
         $(this).data('sketch').color = color
       @canvas.bind 'sketch.changesize', (e, size)->
         $(this).data('sketch').size = size
-      @canvas.bind 'mousedown mouseup mousemove mouseleave touchstart touchmove touchend touchcancel', @onEvent
+      @canvas.bind 'mousedown mouseup mousemove mouseleave mouseout touchstart touchmove touchend touchcancel', @onEvent
 
       if @options.toolLinks
         $('body').delegate "a[href=\"##{@canvas.attr('id')}\"]", 'click', (e)->
@@ -54,19 +54,23 @@
     
     onEvent: (e)->
       $(this).data('sketch').addEvent e
+      e.preventDefault()
       false
 
     addEvent: (e)->
       switch e.type
         when 'mousedown', 'touchstart'
           @startPainting()
-        when 'mouseup', 'mouseout', 'touchend', 'touchcancel'
+        when 'mouseup', 'mouseout', 'mouseleave', 'touchend', 'touchcancel'
           @stopPainting()
       
       if @painting
+        mouseX = if e.touches then e.touches[0].pageX else e.pageX
+        mouseY = if e.touches then e.touches[0].pageY else e.pageY
+
         @action.events.push
-          x: e.pageX - @canvas.offset().left
-          y: e.pageY - @canvas.offset().top
+          x: mouseX - @canvas.offset().left
+          y: mouseY - @canvas.offset().top
           event: e.type
         @redraw()
 
