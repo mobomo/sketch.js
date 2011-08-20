@@ -60,7 +60,8 @@
       };
       Sketch.prototype.redraw = function() {
         var sketch;
-        this.el.width = this.el.width;
+        this.el.width = this.canvas.width();
+        this.context = this.el.getContext('2d');
         sketch = this;
         $.each(this.actions, function() {
           return $.sketch.tools[this.tool].draw.call(sketch, this);
@@ -104,11 +105,12 @@
       this.data('sketch', new Sketch(this.get(0), opts));
       sketch = this.data('sketch');
       this.bind('sketch.changecolor', function(e, color) {
-        return $el.data('sketch.color', color);
+        return sketch.color = color;
       });
       this.bind('mousedown mouseup mousemove mouseleave', sketch.onEvent);
       that = this;
-      if (this.data('sketch').options.toolLinks) {
+      if (sketch.options.toolLinks) {
+        console.log(that);
         $('body').delegate("a[href=\"#" + (that.attr('id')) + "\"]", 'click', function(e) {
           var $this;
           $this = $(this);

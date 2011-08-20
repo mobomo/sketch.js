@@ -53,7 +53,8 @@
         @redraw()
 
     redraw: ->
-      @el.width = @el.width
+      @el.width = @canvas.width()
+      @context = @el.getContext '2d'
       sketch = this
       $.each @actions, ->
         $.sketch.tools[this.tool].draw.call sketch, this
@@ -86,11 +87,12 @@
     sketch = this.data('sketch')
 
     this.bind 'sketch.changecolor', (e, color)->
-      $el.data 'sketch.color', color
+      sketch.color = color
     this.bind 'mousedown mouseup mousemove mouseleave', sketch.onEvent
 
     that = this
-    if this.data('sketch').options.toolLinks
+    if sketch.options.toolLinks
+      console.log that
       $('body').delegate "a[href=\"##{that.attr('id')}\"]", 'click', (e)->
         $this = $(this)
         if $this.attr('data-color')

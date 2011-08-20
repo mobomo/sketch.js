@@ -1,21 +1,83 @@
 <!doctype html>
 <html>
   <head>
+    <title>Sketch.js - Simple Canvas-based Drawing for jQuery</title>
+    <link href='http://fonts.googleapis.com/css?family=Yellowtail|Open+Sans:400italic,700italic,400,700' rel='stylesheet' type='text/css'>
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script src='src/sketch.js'></script>
+    <style type='text/css'>
+      body { font-family: "Open Sans", sans-serif; }
+      h1, h2, h3, h4 { font-family: Yellowtail; font-weight: normal; color: #06a; }
+
+      #wrapper { width: 800px; margin: 0 auto; }
+
+      header { text-align: center; }
+      header h1 { font-size: 46px; text-align: center; margin: 15px 10px; }
+
+      article h1 { font-size: 26px; margin: 0 0 15px; }
+
+      article canvas {
+        width: 800px;
+        height: 300px;
+        border: 1px solid #ccc;
+      }
+    </style>
   </head>
   <body>
-    <h1>Sketch.js</h1>
-    <article class='example'>
-      <h1>Simple Example</h1>
+    <div id='wrapper'>
+      <header>
+        <h1>Sketch.js</h1>
+        <p>Sketch.js is an easy-to-use jQuery plugin that allows you to create canvases
+        upon which visitors can draw.</p>
+      </header>
 
-      <canvas id='simple_sketch' width='400' height='400' style='border: 2px solid black'></canvas>
-      <script type='text/javascript'>
-        $(function() {
-          $('#simple_sketch').sketch();
-        });
-      </script>
-    </article>
+      <article class='example'>
+        <h1>Simple Example</h1>
+        
+        <p>Click and drag in the box below to draw a simple black line.</p>
+
+        <div class='demo'>
+        <canvas id='simple_sketch' width='800' height='300'></canvas>
+        <script type='text/javascript'>
+          $(function() {
+            $('#simple_sketch').sketch();
+          });
+        </script>
+        </div>
+      </article>
+
+      <article class='example'>
+        <h1>Color Change</h1>
+        
+        <p></p>
+        
+        <div class='demo'>
+          <div id='colors_tools'></div>
+          <canvas id='colors_sketch' width='800' height='300'></canvas>
+          <script type='text/javascript'>
+            $(function() {
+             $.each(['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#000', '#fff'], function() {
+                $('#colors_tools').append("<a href='#colors_sketch' data-color='" + this + "' style='border: 1px solid black; width: 30px; height: 30px; background: " + this + "; display: inline-block;'></a> ");
+              });
+              $('#colors_sketch').sketch();
+            });
+          </script>
+        </div>
+      </article>
+    </div>
+    <script type='text/javascript'>
+      var escapeHTML = function(s) {
+        return s
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+      }
+
+      $('article.example').each(function() {
+        $(this).append("<pre class='source'></pre>");
+        $(this).find("pre.source").html(escapeHTML($(this).find("div.demo").html()));
+      });
+    </script>
   </body>
 </html>
 
