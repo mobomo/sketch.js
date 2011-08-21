@@ -31,6 +31,9 @@ Released under the MIT License
         $(this).data('sketch').color = color
       @canvas.bind 'sketch.changesize', (e, size)->
         $(this).data('sketch').size = size
+      @canvas.bind 'sketch.download', (e, format)->
+        $(this).data('sketch').download(format)
+
       @canvas.bind 'mousedown mouseup mousemove mouseleave mouseout touchstart touchmove touchend touchcancel', @onEvent
 
       if @options.toolLinks
@@ -41,6 +44,8 @@ Released under the MIT License
             $canvas.trigger 'sketch.changecolor', $(this).attr('data-color')
           if $this.attr('data-size')
             $canvas.trigger 'sketch.changesize', parseFloat($(this).attr('data-size'))
+          if $(this).attr('data-download')
+            $canvas.trigger 'sketch.download', $(this).attr('data-download')
           false
 
 
@@ -92,6 +97,16 @@ Released under the MIT License
       $.each @actions, ->
         $.sketch.tools[this.tool].draw.call sketch, this
       $.sketch.tools[@action.tool].draw.call sketch, @action if @painting && @action
+
+    download: (filename, format)->
+      format or= "png"
+      format = "jpeg" if format == "jpg"
+      mime = "image/#{format}"
+
+      imgData = @el.toDataURL(mime)
+      imgData = imgData.replace(mime, "image/octet-stream")
+
+      document.location.href = imgData
 
   $.sketch.tools.marker =
     draw: (action)->

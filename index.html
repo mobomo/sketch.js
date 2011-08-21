@@ -92,16 +92,21 @@
       </article>
 
       <article class='example'>
-        <h1>Changing Color/Size</h1>
+        <h1>Changing Color/Size, Downloading Image</h1>
         
         <p>Sketch.js makes it very easy to create links that function as tool buttons.
         By default, any link that has a <code>href</code> tag that points to the ID
         of the converted canvas will automatically be considered a tool link. If the
         link has a <code>data-color</code> attribute then clicking it will change the color.
         Similarly, a <code>data-size</code> attribute will change the brush size.</p>
+
+        <p>Setting the <code>data-download</code> on a tool link to <code>jpeg</code> or
+        <code>png</code> will create a download button for the specified format.</p>
         
         <div class='demo'>
-          <div id='colors_tools'></div>
+          <div id='colors_tools'>
+            <a href='#colors_sketch' data-download='png' style='float: right; width: 100px;'>Download</a>
+          </div>
           <canvas id='colors_sketch' width='800' height='300'></canvas>
           <script type='text/javascript'>
             $(function() {

@@ -32,6 +32,9 @@ Released under the MIT License
       this.canvas.bind('sketch.changesize', function(e, size) {
         return $(this).data('sketch').size = size;
       });
+      this.canvas.bind('sketch.download', function(e, format) {
+        return $(this).data('sketch').download(format);
+      });
       this.canvas.bind('mousedown mouseup mousemove mouseleave mouseout touchstart touchmove touchend touchcancel', this.onEvent);
       if (this.options.toolLinks) {
         $('body').delegate("a[href=\"#" + (this.canvas.attr('id')) + "\"]", 'click', function(e) {
@@ -43,6 +46,9 @@ Released under the MIT License
           }
           if ($this.attr('data-size')) {
             $canvas.trigger('sketch.changesize', parseFloat($(this).attr('data-size')));
+          }
+          if ($(this).attr('data-download')) {
+            $canvas.trigger('sketch.download', $(this).attr('data-download'));
           }
           return false;
         });
@@ -110,6 +116,17 @@ Released under the MIT License
       if (this.painting && this.action) {
         return $.sketch.tools[this.action.tool].draw.call(sketch, this.action);
       }
+    };
+    Sketch.prototype.download = function(filename, format) {
+      var imgData, mime;
+      format || (format = "png");
+      if (format === "jpg") {
+        format = "jpeg";
+      }
+      mime = "image/" + format;
+      imgData = this.el.toDataURL(mime);
+      imgData = imgData.replace(mime, "image/octet-stream");
+      return document.location.href = imgData;
     };
     return Sketch;
   })();
