@@ -20,11 +20,12 @@
     # (e.g. `.sketch('color','#f00')`.
     if typeof(key) == 'string' && sketch
       if sketch[key]
-        sketch[key].apply sketch, args
-      else if args.length == 1
-        sketch.set key, args[0]
-      else if args.length == 0
-        sketch[key]
+        if typeof(sketch[key]) == 'function'
+          sketch[key].apply sketch, args
+        else if args.length == 0
+          sketch[key]
+        else if args.length == 1
+          sketch[key] = args[0]
       else
         $.error('Sketch.js did not recognize the given command.')
     else if sketch
