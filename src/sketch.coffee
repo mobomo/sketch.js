@@ -2,8 +2,6 @@
 # using HTML5 Canvas. It supports multiple browsers including mobile 
 # devices (albeit slowly).
 (($)->
-  $.sketch = { tools: {} }
-
   # ### jQuery('#mycanvas').sketch(options)
   #
   # Given an ID selector for a `<canvas>` element, initialize the specified
@@ -68,22 +66,7 @@
       @actions = []
       @action = []
 
-      # ### Sketch Events
-      #
-      # The `sketch.changecolor` event, when triggered on the canvas element, 
-      # will change the color to the passed argument.
-      @canvas.bind 'sketch.changecolor', (e, color)->
-        $(this).data('sketch').color = color
-      # The `sketch.changesize` event, when triggered on the canvas element,
-      # will change the stroke size to the passed argument.
-      @canvas.bind 'sketch.changesize', (e, size)->
-        $(this).data('sketch').size = size
-      # The `sketch.download` event, when triggered on the canvas element,
-      # will cause the canvas to be downloaded according to the passed format.
-      @canvas.bind 'sketch.download', (e, format)->
-        $(this).data('sketch').download(format)
-
-      @canvas.bind 'mousedown mouseup mousemove mouseleave mouseout touchstart touchmove touchend touchcancel', @onEvent
+      @canvas.bind 'click mousedown mouseup mousemove mouseleave mouseout touchstart touchmove touchend touchcancel', @onEvent
 
       # ### Tool Links
       #
@@ -94,19 +77,19 @@
         $('body').delegate "a[href=\"##{@canvas.attr('id')}\"]", 'click', (e)->
           $this = $(this)
           $canvas = $($this.attr('href'))
-          # If the link has a `data-color` attribute, the canvas's current draw
-          # color will be changed to the value of the attribute.
-          if $this.attr('data-color')
-            $canvas.trigger 'sketch.changecolor', $(this).attr('data-color')
-          # If the link has a `data-size` attribute, the canvas's current draw
-          # size will be changed to the value of the attribute.
-          if $this.attr('data-size')
-            $canvas.trigger 'sketch.changesize', parseFloat($(this).attr('data-size'))
-          # If the link has a `data-download` attribute, the canvas's current
-          # contents will be downloaded in the specified format (acceptable formats
-          # are `jpeg` and `png`).
+          sketch = $canvas.data('sketch')
+          # Tool links are keyed off of HTML5 `data` attributes. The following
+          # attributes are supported:
+          #
+          # * `data-tool`: Change the current tool to the specified value.
+          # * `data-color`: Change the draw color to the specified value.
+          # * `data-size`: Change the stroke size to the specified value.
+          # * `data-download`: Trigger a sketch download in the specified format.
+          for key in ['color', 'size', 'tool']
+            if $this.attr("data-#{key}")
+              sketch.set key, $(this).attr("data-#{key}")
           if $(this).attr('data-download')
-            $canvas.trigger 'sketch.download', $(this).attr('data-download')
+            sketch.download $(this).attr('data-download')
           false
 
     # ### sketch.download(format)
@@ -122,9 +105,12 @@
 
     # ### sketch.set(key, value)
     #
-    # *Internal method.* Sets an arbitrary instance variable on the Sketch instance.
+    # *Internal method.* Sets an arbitrary instance variable on the Sketch instance
+    # and triggers a `changevalue` event so that any appropriate bindings can take
+    # place.
     set: (key, value)->
       this[key] = value
+      @canvas.trigger("sketch.change#{key}", value)
 
     # ### sketch.startPainting()
     #
@@ -135,7 +121,7 @@
       @action = {
         tool: @tool
         color: @color
-        size: @size
+        size: parseFloat(@size)
         events: []
       }
 
@@ -175,6 +161,21 @@
           $.sketch.tools[this.tool].draw.call sketch, this
       $.sketch.tools[@action.tool].draw.call sketch, @action if @painting && @action
 
+  # # Tools
+  #
+  # Sketch.js is built with a pluggable, extensible tool foundation. Each tool works
+  # by accepting and manipulating events registered on the sketch using an `onEvent`
+  # method and then building up **actions** that, when passed to the `draw` method,
+  # will render the tool's effect to the canvas. The tool methods are executed with
+  # the Sketch instance as `this`.
+  #
+  # Tools can be added simply by adding a new key to the `$.sketch.tools` object.
+  $.sketch = { tools: {} }
+  
+  # ## marker
+  #
+  # The marker is the most basic drawing tool. It will draw a stroke of the current
+  # width and current color wherever the user drags his or her mouse.
   $.sketch.tools.marker =
     onEvent: (e)->
       switch e.type
@@ -204,4 +205,17 @@
       @context.strokeStyle = action.color
       @context.lineWidth = action.size
       @context.stroke()
+
+  # ## eraser
+  #
+  # The eraser does just what you'd expect: removes any of the existing sketch.
+  $.sketch.tools.eraser =
+    onEvent: (e)->
+      $.sketch.tools.marker.onEvent.call this, e
+    draw: (action)->
+      oldcomposite = @context.globalCompositeOperation
+      @context.globalCompositeOperation = "copy"
+      action.color = "rgba(0,0,0,0)"
+      $.sketch.tools.marker.draw.call this, action
+      @context.globalCompositeOperation = oldcomposite
 )(jQuery)

@@ -33,9 +33,9 @@
 
       code { background: #cff; }
 
-      #colors_tools { margin-bottom: 10px; }
-      #colors_tools a {
-        border: 1px solid black; width: 30px; height: 30px; line-height: 30px; vertical-align: middle; text-align: center; text-decoration: none; display: inline-block; color: black; font-weight: bold;
+      .tools { margin-bottom: 10px; }
+      .tools a {
+        border: 1px solid black; height: 30px; line-height: 30px; padding: 0 10px; vertical-align: middle; text-align: center; text-decoration: none; display: inline-block; color: black; font-weight: bold;
       }
     </style>
   </head>
@@ -87,20 +87,39 @@
         <p>Setting the <code>data-download</code> on a tool link to <code>jpeg</code> or
         <code>png</code> will create a download button for the specified format.</p>
         
-        <div class='demo'>
-          <div id='colors_tools'>
+        <div class='demo' id='colors_demo'>
+          <div class='tools'>
             <a href='#colors_sketch' data-download='png' style='float: right; width: 100px;'>Download</a>
           </div>
           <canvas id='colors_sketch' width='800' height='300'></canvas>
           <script type='text/javascript'>
             $(function() {
               $.each(['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#000', '#fff'], function() {
-                $('#colors_tools').append("<a href='#colors_sketch' data-color='" + this + "' style='background: " + this + ";'></a> ");
+                $('#colors_demo .tools').append("<a href='#colors_sketch' data-color='" + this + "' style='width: 10px; background: " + this + ";'></a> ");
               });
               $.each([3, 5, 10, 15], function() {
-                $('#colors_tools').append("<a href='#colors_sketch' data-size='" + this + "' style='background: #ccc'>" + this + "</a> ");
+                $('#colors_demo .tools').append("<a href='#colors_sketch' data-size='" + this + "' style='background: #ccc'>" + this + "</a> ");
               });
               $('#colors_sketch').sketch();
+            });
+          </script>
+        </div>
+      </article>
+
+      <article class='example' id='tools_demo'>
+        <h1>Tools Example</h1>
+        
+        <p>Click buttons to switch between tools.</p>
+
+        <div class='demo'>
+          <div class='tools'>
+            <a href='#tools_sketch' data-tool='marker'>Marker</a>
+            <a href='#tools_sketch' data-tool='eraser'>Eraser</a>
+          </div>
+          <canvas id='tools_sketch' width='800' height='300' style='background: url(http://farm1.static.flickr.com/91/239595759_3c3626b24a_b.jpg) no-repeat center center;'></canvas>
+          <script type='text/javascript'>
+            $(function() {
+              $('#tools_sketch').sketch({defaultColor: "#ff0"});
             });
           </script>
         </div>
@@ -135,6 +154,7 @@
         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
         THE SOFTWARE.</p>
       </article>
+
     </div>
     <script type='text/javascript'>
       var escapeHTML = function(s) {
