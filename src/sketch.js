@@ -80,12 +80,12 @@
             this.stopPainting();
         }
         if (this.painting) {
-          if (e.targetTouches && e.targetTouches.length > 1) {
+          if (e.originalEvent.targetTouches && e.originalEvent.targetTouches.length > 1) {
             this.stopPainting();
             return;
           }
-          mouseX = e.targetTouches ? e.targetTouches[0].pageX : e.pageX;
-          mouseY = e.targetTouches ? e.targetTouches[0].pageY : e.pageY;
+          mouseX = e.originalEvent.targetTouches ? e.originalEvent.targetTouches[0].pageX : e.pageX;
+          mouseY = e.originalEvent.targetTouches ? e.originalEvent.targetTouches[0].pageY : e.pageY;
           this.action.events.push({
             x: mouseX - this.canvas.offset().left,
             y: mouseY - this.canvas.offset().top,

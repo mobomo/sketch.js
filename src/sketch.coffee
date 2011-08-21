@@ -63,18 +63,19 @@
           @startPainting()
         when 'mouseup', 'mouseout', 'mouseleave', 'touchend', 'touchcancel'
           @stopPainting()
-      
+
       if @painting
-        if e.targetTouches && e.targetTouches.length > 1
+        if e.originalEvent.targetTouches && e.originalEvent.targetTouches.length > 1
           @stopPainting()
           return
-        mouseX = if e.targetTouches then e.targetTouches[0].pageX else e.pageX
-        mouseY = if e.targetTouches then e.targetTouches[0].pageY else e.pageY
+        mouseX = if e.originalEvent.targetTouches then e.originalEvent.targetTouches[0].pageX else e.pageX
+        mouseY = if e.originalEvent.targetTouches then e.originalEvent.targetTouches[0].pageY else e.pageY
 
         @action.events.push
           x: mouseX - @canvas.offset().left
           y: mouseY - @canvas.offset().top
           event: e.type
+
         @redraw()
 
     redraw: ->
