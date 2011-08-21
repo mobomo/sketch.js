@@ -141,10 +141,7 @@ that begins a paint stroke. </p>             </td>             <td class="code">
       <span class="nv">format = </span><span class="s2">&quot;jpeg&quot;</span> <span class="k">if</span> <span class="nx">format</span> <span class="o">==</span> <span class="s2">&quot;jpg&quot;</span>
       <span class="nv">mime = </span><span class="s2">&quot;image/#{format}&quot;</span>
 
-      <span class="nv">imgData = </span><span class="nx">@el</span><span class="p">.</span><span class="nx">toDataURL</span><span class="p">(</span><span class="nx">mime</span><span class="p">)</span>
-      <span class="nv">imgData = </span><span class="nx">imgData</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="nx">mime</span><span class="p">,</span> <span class="s2">&quot;image/octet-stream&quot;</span><span class="p">)</span>
-
-      <span class="nb">document</span><span class="p">.</span><span class="nv">location.href = </span><span class="nx">imgData</span>
+      <span class="nb">window</span><span class="p">.</span><span class="nx">open</span> <span class="nx">@el</span><span class="p">.</span><span class="nx">toDataURL</span><span class="p">(</span><span class="nx">mime</span><span class="p">)</span>
 
   <span class="nv">$.sketch.tools.marker =</span>
     <span class="nv">draw: </span><span class="nf">(action)-&gt;</span>

@@ -176,10 +176,7 @@
       format = "jpeg" if format == "jpg"
       mime = "image/#{format}"
 
-      imgData = @el.toDataURL(mime)
-      imgData = imgData.replace(mime, "image/octet-stream")
-
-      document.location.href = imgData
+      window.open @el.toDataURL(mime)
 
   $.sketch.tools.marker =
     draw: (action)->
