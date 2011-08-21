@@ -49,6 +49,9 @@ Released under the MIT License
           false
 
 
+    set: (key, value)->
+      this[key] = value
+
     startPainting: ->
       @painting = true
       @action = {
@@ -95,7 +98,8 @@ Released under the MIT License
       @context = @el.getContext '2d'
       sketch = this
       $.each @actions, ->
-        $.sketch.tools[this.tool].draw.call sketch, this
+        if this.tool
+          $.sketch.tools[this.tool].draw.call sketch, this
       $.sketch.tools[@action.tool].draw.call sketch, @action if @painting && @action
 
     download: (filename, format)->
@@ -124,9 +128,22 @@ Released under the MIT License
       @context.lineWidth = action.size
       @context.stroke()
 
-  $.fn.sketch = (opts)->
-    $.error('Sketch can only be called on one element at a time.') if this.length > 1
-    this.data('sketch', new Sketch(this.get(0), opts))
-    this
+  $.fn.sketch = (key, args...)->
+    $.error('Sketch.js can only be called on one element at a time.') if this.length > 1
+    sketch = this.data('sketch')
+    if typeof(key) == 'string' && sketch
+      if sketch[key]
+        sketch[key].apply sketch, args
+      else if args.length == 1
+        sketch.set key, args[0]
+      else if args.length == 0
+        sketch[key]
+      else
+        $.error('Sketch.js did not recognize the given command.')
+    else if sketch
+      sketch
+    else
+      this.data('sketch', new Sketch(this.get(0), key))
+      this
 
 )(jQuery)

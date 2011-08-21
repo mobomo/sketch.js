@@ -4,7 +4,9 @@ Sketch.js v0.0.1
 Copyright 2011 Michael Bleigh and Intridea, Inc.
 Released under the MIT License
 
-*/(function($) {
+*/
+var __slice = Array.prototype.slice;
+(function($) {
   var Sketch;
   $.sketch = {
     tools: {}
@@ -54,6 +56,9 @@ Released under the MIT License
         });
       }
     }
+    Sketch.prototype.set = function(key, value) {
+      return this[key] = value;
+    };
     Sketch.prototype.startPainting = function() {
       this.painting = true;
       return this.action = {
@@ -111,7 +116,9 @@ Released under the MIT License
       this.context = this.el.getContext('2d');
       sketch = this;
       $.each(this.actions, function() {
-        return $.sketch.tools[this.tool].draw.call(sketch, this);
+        if (this.tool) {
+          return $.sketch.tools[this.tool].draw.call(sketch, this);
+        }
       });
       if (this.painting && this.action) {
         return $.sketch.tools[this.action.tool].draw.call(sketch, this.action);
@@ -148,11 +155,28 @@ Released under the MIT License
       return this.context.stroke();
     }
   };
-  return $.fn.sketch = function(opts) {
+  return $.fn.sketch = function() {
+    var args, key, sketch;
+    key = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
     if (this.length > 1) {
-      $.error('Sketch can only be called on one element at a time.');
+      $.error('Sketch.js can only be called on one element at a time.');
     }
-    this.data('sketch', new Sketch(this.get(0), opts));
-    return this;
+    sketch = this.data('sketch');
+    if (typeof key === 'string' && sketch) {
+      if (sketch[key]) {
+        return sketch[key].apply(sketch, args);
+      } else if (args.length === 1) {
+        return sketch.set(key, args[0]);
+      } else if (args.length === 0) {
+        return sketch[key];
+      } else {
+        return $.error('Sketch.js did not recognize the given command.');
+      }
+    } else if (sketch) {
+      return sketch;
+    } else {
+      this.data('sketch', new Sketch(this.get(0), key));
+      return this;
+    }
   };
 })(jQuery);
