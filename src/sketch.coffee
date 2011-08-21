@@ -109,9 +109,20 @@
             $canvas.trigger 'sketch.download', $(this).attr('data-download')
           false
 
+    # ### sketch.download(format)
+    #
+    # Cause the browser to open up a new window with the Data URL of the current
+    # canvas. The `format` parameter can be either `png` or `jpeg`.
+    download: (format)->
+      format or= "png"
+      format = "jpeg" if format == "jpg"
+      mime = "image/#{format}"
+
+      window.open @el.toDataURL(mime)
+
     # ### sketch.set(key, value)
     #
-    # Sets an arbitrary instance variable on the Sketch instance.
+    # *Internal method.* Sets an arbitrary instance variable on the Sketch instance.
     set: (key, value)->
       this[key] = value
 
@@ -137,32 +148,24 @@
       @action = null
       @redraw()
     
+    # ### sketch.onEvent(e)
+    #
+    # *Internal method.* Universal event handler for the canvas. Any mouse or 
+    # touch related events are passed through this handler before being passed
+    # on to the individual tools.
     onEvent: (e)->
-      $(this).data('sketch').addEvent e
+      if e.originalEvent && e.originalEvent.targetTouches
+        e.pageX = e.originalEvent.targetTouches[0].pageX
+        e.pageY = e.originalEvent.targetTouches[0].pageY
+      $.sketch.tools[$(this).data('sketch').tool].onEvent.call($(this).data('sketch'), e)
       e.preventDefault()
       false
 
-    addEvent: (e)->
-      switch e.type
-        when 'mousedown', 'touchstart'
-          @startPainting()
-        when 'mouseup', 'mouseout', 'mouseleave', 'touchend', 'touchcancel'
-          @stopPainting()
-
-      if @painting
-        if e.originalEvent.targetTouches && e.originalEvent.targetTouches.length > 1
-          @stopPainting()
-          return
-        mouseX = if e.originalEvent.targetTouches then e.originalEvent.targetTouches[0].pageX else e.pageX
-        mouseY = if e.originalEvent.targetTouches then e.originalEvent.targetTouches[0].pageY else e.pageY
-
-        @action.events.push
-          x: mouseX - @canvas.offset().left
-          y: mouseY - @canvas.offset().top
-          event: e.type
-
-        @redraw()
-
+    # ### sketch.redraw()
+    #
+    # *Internal method.* Redraw the sketchpad from scratch using the aggregated
+    # actions that have been stored as well as the action in progress if it has
+    # something renderable.
     redraw: ->
       @el.width = @canvas.width()
       @context = @el.getContext '2d'
@@ -172,14 +175,22 @@
           $.sketch.tools[this.tool].draw.call sketch, this
       $.sketch.tools[@action.tool].draw.call sketch, @action if @painting && @action
 
-    download: (filename, format)->
-      format or= "png"
-      format = "jpeg" if format == "jpg"
-      mime = "image/#{format}"
-
-      window.open @el.toDataURL(mime)
-
   $.sketch.tools.marker =
+    onEvent: (e)->
+      switch e.type
+        when 'mousedown', 'touchstart'
+          @startPainting()
+        when 'mouseup', 'mouseout', 'mouseleave', 'touchend', 'touchcancel'
+          @stopPainting()
+
+      if @painting
+        @action.events.push
+          x: e.pageX - @canvas.offset().left
+          y: e.pageY - @canvas.offset().top
+          event: e.type
+
+        @redraw()
+
     draw: (action)->
       @context.lineJoin = "round"
       @context.lineCap = "round"
