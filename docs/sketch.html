@@ -1,0 +1,165 @@
+<!DOCTYPE html>  <html> <head>   <title>sketch.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               sketch.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <p><strong>Sketch.js</strong> is a simple jQuery plugin for creating drawable canvases
+using HTML5 Canvas. It supports multiple browsers including mobile 
+devices (albeit slowly).</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="p">(</span><span class="nf">($)-&gt;</span>
+  <span class="nv">$.sketch = </span><span class="p">{</span> <span class="nv">tools: </span><span class="p">{}</span> <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h3>jQuery('#mycanvas').sketch(options)</h3>
+
+<p>Given an ID selector for a <code>&lt;canvas&gt;</code> element, initialize the specified
+canvas as a drawing canvas. See below for the options that may be passed in.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">$.fn.sketch = </span><span class="nf">(key, args...)-&gt;</span>
+    <span class="nx">$</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">&#39;Sketch.js can only be called on one element at a time.&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="k">this</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">1</span>
+    <span class="nv">sketch = </span><span class="k">this</span><span class="p">.</span><span class="nx">data</span><span class="p">(</span><span class="s1">&#39;sketch&#39;</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>If a canvas has already been initialized as a sketchpad, calling
+<code>.sketch()</code> will return the Sketch instance (see documentation below)
+for the canvas. If you pass a single string argument (such as <code>'color'</code>)
+it will return the value of any set instance variables. If you pass
+a string argument followed by a value, it will set an instance variable
+(e.g. <code>.sketch('color','#f00')</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">if</span> <span class="k">typeof</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;string&#39;</span> <span class="o">&amp;&amp;</span> <span class="nx">sketch</span>
+      <span class="k">if</span> <span class="nx">sketch</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
+        <span class="nx">sketch</span><span class="p">[</span><span class="nx">key</span><span class="p">].</span><span class="nx">apply</span> <span class="nx">sketch</span><span class="p">,</span> <span class="nx">args</span>
+      <span class="k">else</span> <span class="k">if</span> <span class="nx">args</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="nx">sketch</span><span class="p">.</span><span class="nx">set</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+      <span class="k">else</span> <span class="k">if</span> <span class="nx">args</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="nx">sketch</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
+      <span class="k">else</span>
+        <span class="nx">$</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">&#39;Sketch.js did not recognize the given command.&#39;</span><span class="p">)</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="nx">sketch</span>
+      <span class="nx">sketch</span>
+    <span class="k">else</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">data</span><span class="p">(</span><span class="s1">&#39;sketch&#39;</span><span class="p">,</span> <span class="k">new</span> <span class="nx">Sketch</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="nx">key</span><span class="p">))</span>
+      <span class="k">this</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <h2>Sketch</h2>
+
+<p>The Sketch class represents an activated drawing canvas. It holds the
+state, all relevant data, and all methods related to the plugin.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">Sketch</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <h3>new Sketch(el, opts)</h3>
+
+<p>Initialize the Sketch class with a canvas DOM element and any specified
+options. The available options are:</p>
+
+<ul>
+<li><code>toolLinks</code>: If <code>true</code>, automatically turn links with href of <code>#mycanvas</code>
+into tool action links. See below for a description of the available
+tool links.</li>
+<li><code>defaultTool</code>: Defaults to <code>marker</code>, the tool is any of the extensible 
+tools that the canvas should default to.</li>
+<li><code>defaultColor</code>: The default drawing color. Defaults to black.</li>
+<li><code>defaultSize</code>: The default stroke size. Defaults to 5.</li>
+</ul>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">constructor: </span><span class="nf">(el, opts)-&gt;</span>
+      <span class="vi">@el = </span><span class="nx">el</span>
+      <span class="vi">@canvas = </span><span class="nx">$</span><span class="p">(</span><span class="nx">el</span><span class="p">)</span>
+      <span class="vi">@context = </span><span class="nx">el</span><span class="p">.</span><span class="nx">getContext</span> <span class="s1">&#39;2d&#39;</span>
+      <span class="vi">@options = </span><span class="nx">$</span><span class="p">.</span><span class="nx">extend</span> <span class="p">{</span>
+        <span class="nv">toolLinks: </span><span class="kc">true</span>
+        <span class="nv">defaultTool: </span><span class="s1">&#39;marker&#39;</span>
+        <span class="nv">defaultColor: </span><span class="s1">&#39;#000000&#39;</span>
+        <span class="nv">defaultSize: </span><span class="mi">5</span>
+      <span class="p">},</span> <span class="nx">opts</span>
+      <span class="vi">@painting = </span><span class="kc">false</span>
+      <span class="vi">@color = </span><span class="nx">@options</span><span class="p">.</span><span class="nx">defaultColor</span>
+      <span class="vi">@size = </span><span class="nx">@options</span><span class="p">.</span><span class="nx">defaultSize</span>
+      <span class="vi">@tool = </span><span class="nx">@options</span><span class="p">.</span><span class="nx">defaultTool</span>
+      <span class="vi">@actions = </span><span class="p">[]</span>
+      <span class="vi">@action = </span><span class="p">[]</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <h3>Sketch Events</h3>
+
+<p>The <code>sketch.changecolor</code> event, when triggered on the canvas element, 
+will change the color to the passed argument.</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="nx">@canvas</span><span class="p">.</span><span class="nx">bind</span> <span class="s1">&#39;sketch.changecolor&#39;</span><span class="p">,</span> <span class="nf">(e, color)-&gt;</span>
+        <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s1">&#39;sketch&#39;</span><span class="p">).</span><span class="nv">color = </span><span class="nx">color</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>The <code>sketch.changesize</code> event, when triggered on the canvas element,
+will change the stroke size to the passed argument.</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="nx">@canvas</span><span class="p">.</span><span class="nx">bind</span> <span class="s1">&#39;sketch.changesize&#39;</span><span class="p">,</span> <span class="nf">(e, size)-&gt;</span>
+        <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s1">&#39;sketch&#39;</span><span class="p">).</span><span class="nv">size = </span><span class="nx">size</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>The <code>sketch.download</code> event, when triggered on the canvas element,
+will cause the canvas to be downloaded according to the passed format.</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="nx">@canvas</span><span class="p">.</span><span class="nx">bind</span> <span class="s1">&#39;sketch.download&#39;</span><span class="p">,</span> <span class="nf">(e, format)-&gt;</span>
+        <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s1">&#39;sketch&#39;</span><span class="p">).</span><span class="nx">download</span><span class="p">(</span><span class="nx">format</span><span class="p">)</span>
+
+      <span class="nx">@canvas</span><span class="p">.</span><span class="nx">bind</span> <span class="s1">&#39;mousedown mouseup mousemove mouseleave mouseout touchstart touchmove touchend touchcancel&#39;</span><span class="p">,</span> <span class="nx">@onEvent</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <h3>Tool Links</h3>
+
+<p>Tool links automatically bind <code>a</code> tags that have an <code>href</code> attribute
+of <code>#mycanvas</code> (mycanvas being the ID of your <code>&lt;canvas&gt;</code> element to
+perform actions on the canvas.</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="k">if</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">toolLinks</span>
+        <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">).</span><span class="nx">delegate</span> <span class="s2">&quot;a[href=\&quot;##{@canvas.attr(&#39;id&#39;)}\&quot;]&quot;</span><span class="p">,</span> <span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="nf">(e)-&gt;</span>
+          <span class="nv">$this = </span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">)</span>
+          <span class="nv">$canvas = </span><span class="nx">$</span><span class="p">(</span><span class="nx">$this</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;href&#39;</span><span class="p">))</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>If the link has a <code>data-color</code> attribute, the canvas's current draw
+color will be changed to the value of the attribute.</p>             </td>             <td class="code">               <div class="highlight"><pre>          <span class="k">if</span> <span class="nx">$this</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;data-color&#39;</span><span class="p">)</span>
+            <span class="nx">$canvas</span><span class="p">.</span><span class="nx">trigger</span> <span class="s1">&#39;sketch.changecolor&#39;</span><span class="p">,</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;data-color&#39;</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>If the link has a <code>data-size</code> attribute, the canvas's current draw
+size will be changed to the value of the attribute.</p>             </td>             <td class="code">               <div class="highlight"><pre>          <span class="k">if</span> <span class="nx">$this</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;data-size&#39;</span><span class="p">)</span>
+            <span class="nx">$canvas</span><span class="p">.</span><span class="nx">trigger</span> <span class="s1">&#39;sketch.changesize&#39;</span><span class="p">,</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;data-size&#39;</span><span class="p">))</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>If the link has a <code>data-download</code> attribute, the canvas's current
+contents will be downloaded in the specified format (acceptable formats
+are <code>jpeg</code> and <code>png</code>).</p>             </td>             <td class="code">               <div class="highlight"><pre>          <span class="k">if</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;data-download&#39;</span><span class="p">)</span>
+            <span class="nx">$canvas</span><span class="p">.</span><span class="nx">trigger</span> <span class="s1">&#39;sketch.download&#39;</span><span class="p">,</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;data-download&#39;</span><span class="p">)</span>
+          <span class="kc">false</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <h3>sketch.set(key, value)</h3>
+
+<p>Sets an arbitrary instance variable on the Sketch instance.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">set: </span><span class="nf">(key, value)-&gt;</span>
+      <span class="k">this</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span></pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <h3>sketch.startPainting()</h3>
+
+<p><em>Internal method.</em> Called when a mouse or touch event is triggered 
+that begins a paint stroke. </p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">startPainting: </span><span class="o">-&gt;</span>
+      <span class="vi">@painting = </span><span class="kc">true</span>
+      <span class="vi">@action = </span><span class="p">{</span>
+        <span class="nv">tool: </span><span class="nx">@tool</span>
+        <span class="nv">color: </span><span class="nx">@color</span>
+        <span class="nv">size: </span><span class="nx">@size</span>
+        <span class="nv">events: </span><span class="p">[]</span>
+      <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <h3>sketch.stopPainting()</h3>
+
+<p><em>Internal method.</em> Called when the mouse is released or leaves the canvas.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">stopPainting: </span><span class="o">-&gt;</span>
+      <span class="nx">@actions</span><span class="p">.</span><span class="nx">push</span> <span class="nx">@action</span> <span class="k">if</span> <span class="nx">@action</span>
+      <span class="vi">@painting = </span><span class="kc">false</span>
+      <span class="vi">@action = </span><span class="kc">null</span>
+      <span class="nx">@redraw</span><span class="p">()</span>
+    
+    <span class="nv">onEvent: </span><span class="nf">(e)-&gt;</span>
+      <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s1">&#39;sketch&#39;</span><span class="p">).</span><span class="nx">addEvent</span> <span class="nx">e</span>
+      <span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">()</span>
+      <span class="kc">false</span>
+
+    <span class="nv">addEvent: </span><span class="nf">(e)-&gt;</span>
+      <span class="k">switch</span> <span class="nx">e</span><span class="p">.</span><span class="nx">type</span>
+        <span class="k">when</span> <span class="s1">&#39;mousedown&#39;</span><span class="p">,</span> <span class="s1">&#39;touchstart&#39;</span>
+          <span class="nx">@startPainting</span><span class="p">()</span>
+        <span class="k">when</span> <span class="s1">&#39;mouseup&#39;</span><span class="p">,</span> <span class="s1">&#39;mouseout&#39;</span><span class="p">,</span> <span class="s1">&#39;mouseleave&#39;</span><span class="p">,</span> <span class="s1">&#39;touchend&#39;</span><span class="p">,</span> <span class="s1">&#39;touchcancel&#39;</span>
+          <span class="nx">@stopPainting</span><span class="p">()</span>
+
+      <span class="k">if</span> <span class="nx">@painting</span>
+        <span class="k">if</span> <span class="nx">e</span><span class="p">.</span><span class="nx">originalEvent</span><span class="p">.</span><span class="nx">targetTouches</span> <span class="o">&amp;&amp;</span> <span class="nx">e</span><span class="p">.</span><span class="nx">originalEvent</span><span class="p">.</span><span class="nx">targetTouches</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">1</span>
+          <span class="nx">@stopPainting</span><span class="p">()</span>
+          <span class="k">return</span>
+        <span class="nv">mouseX = </span><span class="k">if</span> <span class="nx">e</span><span class="p">.</span><span class="nx">originalEvent</span><span class="p">.</span><span class="nx">targetTouches</span> <span class="k">then</span> <span class="nx">e</span><span class="p">.</span><span class="nx">originalEvent</span><span class="p">.</span><span class="nx">targetTouches</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">pageX</span> <span class="k">else</span> <span class="nx">e</span><span class="p">.</span><span class="nx">pageX</span>
+        <span class="nv">mouseY = </span><span class="k">if</span> <span class="nx">e</span><span class="p">.</span><span class="nx">originalEvent</span><span class="p">.</span><span class="nx">targetTouches</span> <span class="k">then</span> <span class="nx">e</span><span class="p">.</span><span class="nx">originalEvent</span><span class="p">.</span><span class="nx">targetTouches</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">pageY</span> <span class="k">else</span> <span class="nx">e</span><span class="p">.</span><span class="nx">pageY</span>
+
+        <span class="nx">@action</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nx">push</span>
+          <span class="nv">x: </span><span class="nx">mouseX</span> <span class="o">-</span> <span class="nx">@canvas</span><span class="p">.</span><span class="nx">offset</span><span class="p">().</span><span class="nx">left</span>
+          <span class="nv">y: </span><span class="nx">mouseY</span> <span class="o">-</span> <span class="nx">@canvas</span><span class="p">.</span><span class="nx">offset</span><span class="p">().</span><span class="nx">top</span>
+          <span class="nv">event: </span><span class="nx">e</span><span class="p">.</span><span class="nx">type</span>
+
+        <span class="nx">@redraw</span><span class="p">()</span>
+
+    <span class="nv">redraw: </span><span class="o">-&gt;</span>
+      <span class="vi">@el.width = </span><span class="nx">@canvas</span><span class="p">.</span><span class="nx">width</span><span class="p">()</span>
+      <span class="vi">@context = </span><span class="nx">@el</span><span class="p">.</span><span class="nx">getContext</span> <span class="s1">&#39;2d&#39;</span>
+      <span class="nv">sketch = </span><span class="k">this</span>
+      <span class="nx">$</span><span class="p">.</span><span class="nx">each</span> <span class="nx">@actions</span><span class="p">,</span> <span class="o">-&gt;</span>
+        <span class="k">if</span> <span class="k">this</span><span class="p">.</span><span class="nx">tool</span>
+          <span class="nx">$</span><span class="p">.</span><span class="nx">sketch</span><span class="p">.</span><span class="nx">tools</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">tool</span><span class="p">].</span><span class="nx">draw</span><span class="p">.</span><span class="nx">call</span> <span class="nx">sketch</span><span class="p">,</span> <span class="k">this</span>
+      <span class="nx">$</span><span class="p">.</span><span class="nx">sketch</span><span class="p">.</span><span class="nx">tools</span><span class="p">[</span><span class="nx">@action</span><span class="p">.</span><span class="nx">tool</span><span class="p">].</span><span class="nx">draw</span><span class="p">.</span><span class="nx">call</span> <span class="nx">sketch</span><span class="p">,</span> <span class="nx">@action</span> <span class="k">if</span> <span class="nx">@painting</span> <span class="o">&amp;&amp;</span> <span class="nx">@action</span>
+
+    <span class="nv">download: </span><span class="nf">(filename, format)-&gt;</span>
+      <span class="nx">format</span> <span class="o">or=</span> <span class="s2">&quot;png&quot;</span>
+      <span class="nv">format = </span><span class="s2">&quot;jpeg&quot;</span> <span class="k">if</span> <span class="nx">format</span> <span class="o">==</span> <span class="s2">&quot;jpg&quot;</span>
+      <span class="nv">mime = </span><span class="s2">&quot;image/#{format}&quot;</span>
+
+      <span class="nv">imgData = </span><span class="nx">@el</span><span class="p">.</span><span class="nx">toDataURL</span><span class="p">(</span><span class="nx">mime</span><span class="p">)</span>
+      <span class="nv">imgData = </span><span class="nx">imgData</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="nx">mime</span><span class="p">,</span> <span class="s2">&quot;image/octet-stream&quot;</span><span class="p">)</span>
+
+      <span class="nb">document</span><span class="p">.</span><span class="nv">location.href = </span><span class="nx">imgData</span>
+
+  <span class="nv">$.sketch.tools.marker =</span>
+    <span class="nv">draw: </span><span class="nf">(action)-&gt;</span>
+      <span class="vi">@context.lineJoin = </span><span class="s2">&quot;round&quot;</span>
+      <span class="vi">@context.lineCap = </span><span class="s2">&quot;round&quot;</span>
+      <span class="nx">@context</span><span class="p">.</span><span class="nx">beginPath</span><span class="p">()</span>
+      
+      <span class="nx">@context</span><span class="p">.</span><span class="nx">moveTo</span> <span class="nx">action</span><span class="p">.</span><span class="nx">events</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">x</span><span class="p">,</span> <span class="nx">action</span><span class="p">.</span><span class="nx">events</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">y</span>
+      <span class="k">for</span> <span class="nx">event</span> <span class="k">in</span> <span class="nx">action</span><span class="p">.</span><span class="nx">events</span>
+        <span class="nx">@context</span><span class="p">.</span><span class="nx">lineTo</span> <span class="nx">event</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span> <span class="nx">event</span><span class="p">.</span><span class="nx">y</span>
+
+        <span class="nv">previous = </span><span class="nx">event</span>
+      <span class="vi">@context.strokeStyle = </span><span class="nx">action</span><span class="p">.</span><span class="nx">color</span>
+      <span class="vi">@context.lineWidth = </span><span class="nx">action</span><span class="p">.</span><span class="nx">size</span>
+      <span class="nx">@context</span><span class="p">.</span><span class="nx">stroke</span><span class="p">()</span>
+<span class="p">)(</span><span class="nx">jQuery</span><span class="p">)</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
