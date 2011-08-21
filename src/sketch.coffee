@@ -1,3 +1,11 @@
+###
+
+Sketch.js v0.0.1
+Copyright 2011 Michael Bleigh and Intridea, Inc.
+Released under the MIT License
+
+###
+
 (($)->
   $.sketch = { tools: {} }
 
@@ -12,7 +20,6 @@
         defaultColor: '#000000'
         defaultSize: 5
       }, opts
-
       @painting = false
       @color = @options.defaultColor
       @size = @options.defaultSize
