@@ -9,3 +9,10 @@ guard 'process', :name => 'Docco', :command => 'docco src/sketch.coffee' do
   watch %r{src/.+\.coffee}
 end
 
+guard 'process', :name => 'Copy to min', :command => 'cp lib/sketch.js lib/sketch.min.js' do
+  watch %r{lib/sketch.js}
+end
+
+guard 'uglify', :destination_file => "lib/sketch.min.js" do
+  watch (%r{lib/sketch.min.js})
+end

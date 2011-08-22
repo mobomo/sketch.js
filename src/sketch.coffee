@@ -1,6 +1,8 @@
+# # Sketch.js (v0.0.1)
+#
 # **Sketch.js** is a simple jQuery plugin for creating drawable canvases
 # using HTML5 Canvas. It supports multiple browsers including mobile 
-# devices (albeit slowly).
+# devices (albeit with performance penalties).
 (($)->
   # ### jQuery('#mycanvas').sketch(options)
   #
