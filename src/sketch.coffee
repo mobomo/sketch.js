@@ -216,8 +216,8 @@
       $.sketch.tools.marker.onEvent.call this, e
     draw: (action)->
       oldcomposite = @context.globalCompositeOperation
-      @context.globalCompositeOperation = "copy"
-      action.color = "rgba(0,0,0,0)"
+      @context.globalCompositeOperation = "destination-out"
+      action.color = "rgba(0,0,0,1)"
       $.sketch.tools.marker.draw.call this, action
       @context.globalCompositeOperation = oldcomposite
 )(jQuery)
