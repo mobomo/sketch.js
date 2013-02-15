@@ -143,8 +143,12 @@
     # on to the individual tools.
     onEvent: (e)->
       if e.originalEvent && e.originalEvent.targetTouches
-        e.pageX = e.originalEvent.targetTouches[0].pageX
-        e.pageY = e.originalEvent.targetTouches[0].pageY
+        if e.type == 'touchend'
+          e.pageX = e.originalEvent.pageX
+          e.pageY = e.originalEvent.pageY
+        else
+          e.pageX = e.originalEvent.targetTouches[0].pageX
+          e.pageY = e.originalEvent.targetTouches[0].pageY
       $.sketch.tools[$(this).data('sketch').tool].onEvent.call($(this).data('sketch'), e)
       e.preventDefault()
       false
