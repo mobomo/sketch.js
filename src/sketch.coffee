@@ -142,7 +142,7 @@
     # touch related events are passed through this handler before being passed
     # on to the individual tools.
     onEvent: (e)->
-      if e.originalEvent && e.originalEvent.targetTouches
+      if e.originalEvent && e.originalEvent.targetTouches && e.originalEvent.targetTouches.length
         e.pageX = e.originalEvent.targetTouches[0].pageX
         e.pageY = e.originalEvent.targetTouches[0].pageY
       $.sketch.tools[$(this).data('sketch').tool].onEvent.call($(this).data('sketch'), e)
