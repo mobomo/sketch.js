@@ -156,6 +156,7 @@
     # something renderable.
     redraw: ->
       @el.width = @canvas.width()
+      @el.height = @canvas.height()
       @context = @el.getContext '2d'
       sketch = this
       $.each @actions, ->
