@@ -106,6 +106,17 @@
             sketch.download $(this).attr('data-download')
           false
 
+      ## Stop the back button moving the browser history -1 if the canvas is in focus!
+      $(document).unbind("keydown").bind "keydown", (event) ->
+        doPrevent = false
+        if event.keyCode is 8
+          d = event.srcElement or event.target
+          if d.tagName.toUpperCase() is "CANVAS"
+            doPrevent = true
+
+        event.preventDefault()  if doPrevent
+
+
     # ### sketch.download(format)
     #
     # Cause the browser to open up a new window with the Data URL of the current
