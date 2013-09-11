@@ -1,7 +1,7 @@
 # # Sketch.js (v0.0.1)
 #
 # **Sketch.js** is a simple jQuery plugin for creating drawable canvases
-# using HTML5 Canvas. It supports multiple browsers including mobile 
+# using HTML5 Canvas. It supports multiple browsers including mobile
 # devices (albeit with performance penalties).
 (($)->
   # ### jQuery('#mycanvas').sketch(options)
@@ -47,7 +47,7 @@
     # * `toolLinks`: If `true`, automatically turn links with href of `#mycanvas`
     #   into tool action links. See below for a description of the available
     #   tool links.
-    # * `defaultTool`: Defaults to `marker`, the tool is any of the extensible 
+    # * `defaultTool`: Defaults to `marker`, the tool is any of the extensible
     #   tools that the canvas should default to.
     # * `defaultColor`: The default drawing color. Defaults to black.
     # * `defaultSize`: The default stroke size. Defaults to 5.
@@ -72,6 +72,7 @@
         positionX: 0
         positionY: 0
         letterspace: 10
+        linespace: 15
         font: "16px 'Courier New'"
         addCursor: ->
           _sketch.context.fillStyle = "#888"
@@ -139,8 +140,8 @@
 
     # ### sketch.startPainting()
     #
-    # *Internal method.* Called when a mouse or touch event is triggered 
-    # that begins a paint stroke. 
+    # *Internal method.* Called when a mouse or touch event is triggered
+    # that begins a paint stroke.
     startPainting: ->
       @painting = true
       @action = {
@@ -186,20 +187,21 @@
         if @textTool.positionX > @textTool.originalX
           @textTool.positionX = @textTool.positionX - @textTool.letterspace
         else
-          @textTool.positionY = @textTool.positionY - (@textTool.letterspace + 5)
+          @textTool.positionY = @textTool.positionY - (@textTool.linespace)
           @textTool.positionX = @textTool.lineLengths[@textTool.lineLengths.length - 1]
           @textTool.lineLengths.pop()
+        e.preventDefault()
 
       ## Enter key support
       else if e.keyCode is 13
         @textTool.lineLengths.push(@textTool.positionX - @textTool.letterspace)
         @textTool.positionX = @textTool.originalX
-        @textTool.positionY = @textTool.positionY + (@textTool.letterspace + 5)
-      e.preventDefault()
-    
+        @textTool.positionY = @textTool.positionY + (@textTool.linespace)
+
+
     # ### sketch.onEvent(e)
     #
-    # *Internal method.* Universal event handler for the canvas. Any mouse or 
+    # *Internal method.* Universal event handler for the canvas. Any mouse or
     # touch related events are passed through this handler before being passed
     # on to the individual tools.
     onEvent: (e)->
@@ -234,7 +236,7 @@
   #
   # Tools can be added simply by adding a new key to the `$.sketch.tools` object.
   $.sketch = { tools: {} }
-  
+
   # ## marker
   #
   # The marker is the most basic drawing tool. It will draw a stroke of the current
@@ -259,7 +261,7 @@
       @context.lineJoin = "round"
       @context.lineCap = "round"
       @context.beginPath()
-      
+
       @context.moveTo action.events[0].x, action.events[0].y
       for event in action.events
         @context.lineTo event.x, event.y
