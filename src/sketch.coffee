@@ -174,14 +174,14 @@
         tool: 'text'
         positionX: @textTool.positionX
         positionY: @textTool.positionY
-        letter: String.fromCharCode(e.keyCode)
+        letter: String.fromCharCode(e.which)
         color: @color
 
       @textTool.positionX = @textTool.positionX + @textTool.letterspace
       @actions.push action
 
     addNonCharacterKeys: (e) ->
-      ## Delete key support
+      # Delete key support
       if e.keyCode is 8 and  @actions[@actions.length - 1].tool == 'text'
         @actions.pop()
         if @textTool.positionX > @textTool.originalX
@@ -192,7 +192,7 @@
           @textTool.lineLengths.pop()
         e.preventDefault()
 
-      ## Enter key support
+      # Enter key support
       else if e.keyCode is 13
         @textTool.lineLengths.push(@textTool.positionX - @textTool.letterspace)
         @textTool.positionX = @textTool.originalX
