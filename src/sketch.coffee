@@ -108,7 +108,7 @@
             sketch.download $(this).attr('data-download')
           false
 
-      ## Stop the back button moving the browser history -1 if the canvas is in focus!
+      # Stop the back button moving the browser history -1 if the canvas is in focus!
       $(document).unbind("keydown").bind "keydown", (event) ->
         doPrevent = false
         if event.keyCode is 8
@@ -171,7 +171,7 @@
 
     addText: (e) ->
       action =
-        tool: "text"
+        tool: 'text'
         positionX: @textTool.positionX
         positionY: @textTool.positionY
         letter: String.fromCharCode(e.keyCode)
@@ -182,7 +182,7 @@
 
     addNonCharacterKeys: (e) ->
       ## Delete key support
-      if e.keyCode is 8
+      if e.keyCode is 8 and  @actions[@actions.length - 1].tool == 'text'
         @actions.pop()
         if @textTool.positionX > @textTool.originalX
           @textTool.positionX = @textTool.positionX - @textTool.letterspace
