@@ -55,6 +55,7 @@
       _sketch = this
       @el = el
       @canvas = $(el)
+      @canvas.attr('tabindex', 100)
       @context = el.getContext '2d'
       @options = $.extend {
         toolLinks: true
@@ -162,7 +163,7 @@
         positionX: @textTool.positionX
         positionY: @textTool.positionY
         letter: String.fromCharCode(e.keyCode)
-        color: "#000"
+        color: @color
 
       @textTool.positionX = @textTool.positionX + @textTool.letterspace
       @actions.push action
