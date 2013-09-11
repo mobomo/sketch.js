@@ -52,6 +52,7 @@
     # * `defaultColor`: The default drawing color. Defaults to black.
     # * `defaultSize`: The default stroke size. Defaults to 5.
     constructor: (el, opts)->
+      _sketch = this
       @el = el
       @canvas = $(el)
       @context = el.getContext '2d'
@@ -65,10 +66,20 @@
       @color = @options.defaultColor
       @size = @options.defaultSize
       @tool = @options.defaultTool
+      @textTool =
+        originalX: 0
+        positionX: 0
+        positionY: 0
+        letterspace: 10
+        font: "16px 'Courier New'"
+        addCursor: ->
+          _sketch.context.fillStyle = "#888"
+          _sketch.context.font = @font
+          _sketch.context.fillText "_", @positionX, @positionY
       @actions = []
       @action = []
 
-      @canvas.bind 'click mousedown mouseup mousemove mouseleave mouseout touchstart touchmove touchend touchcancel', @onEvent
+      @canvas.bind 'keyup keypress click mousedown mouseup mousemove mouseleave mouseout touchstart touchmove touchend touchcancel', @onEvent
 
       # ### Tool Links
       #
@@ -135,6 +146,35 @@
       @painting = false
       @action = null
       @redraw()
+
+    dropCursor: (e) ->
+      @canvas.focus()
+      canvasOffset = @canvas.offset()
+      @textTool.positionX = e.pageX - canvasOffset.left
+      @textTool.originalX = @textTool.positionX
+      @textTool.positionY = e.pageY - canvasOffset.top
+      @redraw()
+      @textTool.addCursor()
+
+    addText: (e) ->
+      action =
+        tool: "text"
+        positionX: @textTool.positionX
+        positionY: @textTool.positionY
+        letter: String.fromCharCode(e.keyCode)
+        color: "#000"
+
+      @textTool.positionX = @textTool.positionX + @textTool.letterspace
+      @actions.push action
+
+    addNonCharacterKeys: (e) ->
+      if e.keyCode is 8
+        @actions.pop()
+        @textTool.positionX = @textTool.positionX - @textTool.letterspace
+      else if e.keyCode is 13
+        @textTool.positionX = @textTool.originalX
+        @textTool.positionY = @textTool.positionY + @textTool.letterspace + 5
+      e.preventDefault()
     
     # ### sketch.onEvent(e)
     #
@@ -207,6 +247,25 @@
       @context.strokeStyle = action.color
       @context.lineWidth = action.size
       @context.stroke()
+
+  # ## Text tool
+  $.sketch.tools.text =
+    onEvent: (e) ->
+      switch e.type
+        when "mousedown", "touchstart"
+          @dropCursor e
+        when "keypress"
+          @addText e
+          @redraw()
+        when "keyup"
+          @addNonCharacterKeys e
+          @redraw()
+
+    draw: (action) ->
+      @context.fillStyle = action.color
+      @context.font = @textTool.font
+      @context.fillText action.letter, action.positionX, action.positionY
+      @textTool.addCursor()
 
   # ## eraser
   #
