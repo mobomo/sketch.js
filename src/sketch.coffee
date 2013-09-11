@@ -170,15 +170,16 @@
       @textTool.addCursor()
 
     addText: (e) ->
-      action =
-        tool: 'text'
-        positionX: @textTool.positionX
-        positionY: @textTool.positionY
-        letter: String.fromCharCode(e.which)
-        color: @color
+      if e.keyCode != 8
+        action =
+          tool: 'text'
+          positionX: @textTool.positionX
+          positionY: @textTool.positionY
+          letter: String.fromCharCode(e.which)
+          color: @color
 
-      @textTool.positionX = @textTool.positionX + @textTool.letterspace
-      @actions.push action
+        @textTool.positionX = @textTool.positionX + @textTool.letterspace
+        @actions.push action
 
     addNonCharacterKeys: (e) ->
       # Delete key support
