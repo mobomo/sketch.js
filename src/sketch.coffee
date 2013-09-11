@@ -77,6 +77,7 @@
           _sketch.context.fillStyle = "#888"
           _sketch.context.font = @font
           _sketch.context.fillText "_", @positionX, @positionY
+        lineLengths: []
       @actions = []
       @action = []
 
@@ -115,7 +116,6 @@
             doPrevent = true
 
         event.preventDefault()  if doPrevent
-
 
     # ### sketch.download(format)
     #
@@ -180,12 +180,21 @@
       @actions.push action
 
     addNonCharacterKeys: (e) ->
+      ## Delete key support
       if e.keyCode is 8
         @actions.pop()
-        @textTool.positionX = @textTool.positionX - @textTool.letterspace
+        if @textTool.positionX > @textTool.originalX
+          @textTool.positionX = @textTool.positionX - @textTool.letterspace
+        else
+          @textTool.positionY = @textTool.positionY - (@textTool.letterspace + 5)
+          @textTool.positionX = @textTool.lineLengths[@textTool.lineLengths.length - 1]
+          @textTool.lineLengths.pop()
+
+      ## Enter key support
       else if e.keyCode is 13
+        @textTool.lineLengths.push(@textTool.positionX - @textTool.letterspace)
         @textTool.positionX = @textTool.originalX
-        @textTool.positionY = @textTool.positionY + @textTool.letterspace + 5
+        @textTool.positionY = @textTool.positionY + (@textTool.letterspace + 5)
       e.preventDefault()
     
     # ### sketch.onEvent(e)
