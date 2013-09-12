@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tools and Colors</title>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src='../src/sketch.js'></script>
+    <script type='text/javascript'>
+        $(function() {
+            $.each(['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#000', '#fff'], function() {
+                $('.tools').append("<a href='#tools_sketch' data-color='" + this + "' style='display:inline-block;height:20px; width: 10px; background: " + this + ";'></a> ");
+            });
+            $.each(['marker', 'text', 'eraser'], function() {
+                $('.tools').append("<a href='#tools_sketch' data-tool='" + this + "' style='display:inline-block;background: #ccc'>" + this + "</a> ");
+            });
+            $('#tools_sketch').sketch();
+        });
+    </script>
+</head>
+<body>
+<div class="tools">
+
+</div>
+<canvas id="tools_sketch" width="800" height="300" tabindex="1"></canvas>
+
+</body>
+</html>

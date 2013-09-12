@@ -1,7 +1,7 @@
 # # Sketch.js (v0.0.1)
 #
 # **Sketch.js** is a simple jQuery plugin for creating drawable canvases
-# using HTML5 Canvas. It supports multiple browsers including mobile 
+# using HTML5 Canvas. It supports multiple browsers including mobile
 # devices (albeit with performance penalties).
 (($)->
   # ### jQuery('#mycanvas').sketch(options)
@@ -47,13 +47,21 @@
     # * `toolLinks`: If `true`, automatically turn links with href of `#mycanvas`
     #   into tool action links. See below for a description of the available
     #   tool links.
-    # * `defaultTool`: Defaults to `marker`, the tool is any of the extensible 
+    # * `defaultTool`: Defaults to `marker`, the tool is any of the extensible
     #   tools that the canvas should default to.
     # * `defaultColor`: The default drawing color. Defaults to black.
     # * `defaultSize`: The default stroke size. Defaults to 5.
     constructor: (el, opts)->
+      _sketch = this
       @el = el
       @canvas = $(el)
+      @canvas.attr('tabindex', 100)
+      @ghostInput = $("<input id=\"sketch-ghost-input\" />")
+      @ghostInput.attr "style", "position:absolute; top: " + @canvas.position().top + "px; left:" + @canvas.position().left + "px; opacity:0;"
+      @ghostInput.bind "keyup keydown keypress", (e) ->
+        e.currentTarget = $(el).get(0)
+        $(el).trigger e
+      @ghostInput.insertAfter @canvas
       @context = el.getContext '2d'
       @options = $.extend {
         toolLinks: true
@@ -65,10 +73,22 @@
       @color = @options.defaultColor
       @size = @options.defaultSize
       @tool = @options.defaultTool
+      @textTool =
+        originalX: 0
+        positionX: 0
+        positionY: 0
+        letterspace: 10
+        linespace: 15
+        font: "16px 'Courier New'"
+        addCursor: ->
+          _sketch.context.fillStyle = "#888"
+          _sketch.context.font = @font
+          _sketch.context.fillText "_", @positionX, @positionY
+        lineLengths: []
       @actions = []
       @action = []
 
-      @canvas.bind 'click mousedown mouseup mousemove mouseleave mouseout touchstart touchmove touchend touchcancel', @onEvent
+      @canvas.bind 'keyup keypress click mousedown mouseup mousemove mouseleave mouseout touchstart touchmove touchend touchcancel', @onEvent
 
       # ### Tool Links
       #
@@ -94,6 +114,16 @@
             sketch.download $(this).attr('data-download')
           false
 
+      # Stop the back button moving the browser history -1 if the canvas is in focus!
+      $(document).unbind("keydown").bind "keydown", (event) ->
+        doPrevent = false
+        if event.keyCode is 8
+          d = event.srcElement or event.target
+          if d.tagName.toUpperCase() is "CANVAS"
+            doPrevent = true
+
+        event.preventDefault()  if doPrevent
+
     # ### sketch.download(format)
     #
     # Cause the browser to open up a new window with the Data URL of the current
@@ -116,8 +146,8 @@
 
     # ### sketch.startPainting()
     #
-    # *Internal method.* Called when a mouse or touch event is triggered 
-    # that begins a paint stroke. 
+    # *Internal method.* Called when a mouse or touch event is triggered
+    # that begins a paint stroke.
     startPainting: ->
       @painting = true
       @action = {
@@ -135,16 +165,60 @@
       @painting = false
       @action = null
       @redraw()
-    
+
+    dropCursor: (e) ->
+      @ghostInput.focus();
+      canvasOffset = @canvas.offset()
+      @textTool.positionX = e.pageX - canvasOffset.left
+      @textTool.originalX = @textTool.positionX
+      @textTool.positionY = e.pageY - canvasOffset.top
+      @redraw()
+      @textTool.addCursor()
+
+    addText: (e) ->
+      if e.keyCode != 8
+        action =
+          tool: 'text'
+          positionX: @textTool.positionX
+          positionY: @textTool.positionY
+          letter: String.fromCharCode(e.which)
+          color: @color
+
+        @textTool.positionX = @textTool.positionX + @textTool.letterspace
+        @actions.push action
+
+    addNonCharacterKeys: (e) ->
+      # Delete key support
+      if e.keyCode is 8 and  @actions[@actions.length - 1].tool == 'text'
+        @actions.pop()
+        if @textTool.positionX > @textTool.originalX
+          @textTool.positionX = @textTool.positionX - @textTool.letterspace
+        else
+          @textTool.positionY = @textTool.positionY - (@textTool.linespace)
+          @textTool.positionX = @textTool.lineLengths[@textTool.lineLengths.length - 1]
+          @textTool.lineLengths.pop()
+        e.preventDefault()
+
+      # Enter key support
+      else if e.keyCode is 13
+        @textTool.lineLengths.push(@textTool.positionX - @textTool.letterspace)
+        @textTool.positionX = @textTool.originalX
+        @textTool.positionY = @textTool.positionY + (@textTool.linespace)
+
+
     # ### sketch.onEvent(e)
     #
-    # *Internal method.* Universal event handler for the canvas. Any mouse or 
+    # *Internal method.* Universal event handler for the canvas. Any mouse or
     # touch related events are passed through this handler before being passed
     # on to the individual tools.
     onEvent: (e)->
       if e.originalEvent && e.originalEvent.targetTouches
-        e.pageX = e.originalEvent.targetTouches[0].pageX
-        e.pageY = e.originalEvent.targetTouches[0].pageY
+        if e.type == 'touchend'
+          e.pageX = e.originalEvent.pageX
+          e.pageY = e.originalEvent.pageY
+        else
+          e.pageX = e.originalEvent.targetTouches[0].pageX
+          e.pageY = e.originalEvent.targetTouches[0].pageY
       $.sketch.tools[$(this).data('sketch').tool].onEvent.call($(this).data('sketch'), e)
       e.preventDefault()
       false
@@ -173,7 +247,7 @@
   #
   # Tools can be added simply by adding a new key to the `$.sketch.tools` object.
   $.sketch = { tools: {} }
-  
+
   # ## marker
   #
   # The marker is the most basic drawing tool. It will draw a stroke of the current
@@ -198,7 +272,7 @@
       @context.lineJoin = "round"
       @context.lineCap = "round"
       @context.beginPath()
-      
+
       @context.moveTo action.events[0].x, action.events[0].y
       for event in action.events
         @context.lineTo event.x, event.y
@@ -207,6 +281,25 @@
       @context.strokeStyle = action.color
       @context.lineWidth = action.size
       @context.stroke()
+
+  # ## Text tool
+  $.sketch.tools.text =
+    onEvent: (e) ->
+      switch e.type
+        when "mousedown", "touchstart"
+          @dropCursor e
+        when "keypress"
+          @addText e
+          @redraw()
+        when "keyup"
+          @addNonCharacterKeys e
+          @redraw()
+
+    draw: (action) ->
+      @context.fillStyle = action.color
+      @context.font = @textTool.font
+      @context.fillText action.letter, action.positionX, action.positionY
+      @textTool.addCursor()
 
   # ## eraser
   #
