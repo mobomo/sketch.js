@@ -56,6 +56,12 @@
       @el = el
       @canvas = $(el)
       @canvas.attr('tabindex', 100)
+      @ghostInput = $("<input id=\"sketch-ghost-input\" />")
+      @ghostInput.attr "style", "position:absolute; top: " + @canvas.position().top + "px; left:" + @canvas.position().left + "px; opacity:0;"
+      @ghostInput.bind "keyup keydown keypress", (e) ->
+        e.currentTarget = $(el).get(0)
+        $(el).trigger e
+      @ghostInput.insertAfter @canvas
       @context = el.getContext '2d'
       @options = $.extend {
         toolLinks: true
@@ -161,7 +167,7 @@
       @redraw()
 
     dropCursor: (e) ->
-      @canvas.focus()
+      @ghostInput.focus();
       canvasOffset = @canvas.offset()
       @textTool.positionX = e.pageX - canvasOffset.left
       @textTool.originalX = @textTool.positionX
