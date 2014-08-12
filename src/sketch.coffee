@@ -119,6 +119,8 @@
     # *Internal method.* Called when a mouse or touch event is triggered 
     # that begins a paint stroke. 
     startPainting: ->
+      if @painting
+        @stopPainting()
       @painting = true
       @action = {
         tool: @tool
