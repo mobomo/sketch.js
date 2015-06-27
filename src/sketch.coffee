@@ -1,7 +1,7 @@
 # # Sketch.js (v0.0.1)
 #
 # **Sketch.js** is a simple jQuery plugin for creating drawable canvases
-# using HTML5 Canvas. It supports multiple browsers including mobile 
+# using HTML5 Canvas. It supports multiple browsers including mobile
 # devices (albeit with performance penalties).
 (($)->
   # ### jQuery('#mycanvas').sketch(options)
@@ -47,7 +47,7 @@
     # * `toolLinks`: If `true`, automatically turn links with href of `#mycanvas`
     #   into tool action links. See below for a description of the available
     #   tool links.
-    # * `defaultTool`: Defaults to `marker`, the tool is any of the extensible 
+    # * `defaultTool`: Defaults to `marker`, the tool is any of the extensible
     #   tools that the canvas should default to.
     # * `defaultColor`: The default drawing color. Defaults to black.
     # * `defaultSize`: The default stroke size. Defaults to 5.
@@ -116,8 +116,8 @@
 
     # ### sketch.startPainting()
     #
-    # *Internal method.* Called when a mouse or touch event is triggered 
-    # that begins a paint stroke. 
+    # *Internal method.* Called when a mouse or touch event is triggered
+    # that begins a paint stroke.
     startPainting: ->
       @painting = true
       @action = {
@@ -135,10 +135,10 @@
       @painting = false
       @action = null
       @redraw()
-    
+
     # ### sketch.onEvent(e)
     #
-    # *Internal method.* Universal event handler for the canvas. Any mouse or 
+    # *Internal method.* Universal event handler for the canvas. Any mouse or
     # touch related events are passed through this handler before being passed
     # on to the individual tools.
     onEvent: (e)->
@@ -173,7 +173,7 @@
   #
   # Tools can be added simply by adding a new key to the `$.sketch.tools` object.
   $.sketch = { tools: {} }
-  
+
   # ## marker
   #
   # The marker is the most basic drawing tool. It will draw a stroke of the current
@@ -198,7 +198,7 @@
       @context.lineJoin = "round"
       @context.lineCap = "round"
       @context.beginPath()
-      
+
       @context.moveTo action.events[0].x, action.events[0].y
       for event in action.events
         @context.lineTo event.x, event.y
@@ -215,9 +215,13 @@
     onEvent: (e)->
       $.sketch.tools.marker.onEvent.call this, e
     draw: (action)->
+      @erasing = true
+      old_color  = action.color
       oldcomposite = @context.globalCompositeOperation
       @context.globalCompositeOperation = "destination-out"
       action.color = "rgba(0,0,0,1)"
       $.sketch.tools.marker.draw.call this, action
       @context.globalCompositeOperation = oldcomposite
+      @erasing = false
+      action.color = old_color
 )(jQuery)
