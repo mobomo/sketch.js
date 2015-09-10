@@ -1,0 +1,71 @@
+<html class="ui-mobile"><head>
+	<title>Signature</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>
+    <script src="../src/sketch.js" type="text/javascript"></script>
+<script type="text/javascript">//<!--
+var sketchId = "simple_sketch";
+var sktch = undefined;
+var resetCanvas = function() {
+	if (sktch !== undefined) {
+	    sktch.sketch().actions = [];       // this line empties the actions. 
+	    var myCanvas = document.getElementById(sketchId);
+	    if (myCanvas) {
+		    var ctx = myCanvas.getContext('2d');
+		    ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+	    }
+	}
+};
+var saveCanvas = function() {
+	// TODO
+    /* replace canvas with image */
+    var canvas = document.getElementById(sketchId);
+    var img    = canvas.toDataURL("image/png");
+    $('#'+sketchId).replaceWith('<img src="'+img+'"/>');
+    $("#buttonReset").remove();
+    alert(img);
+};
+$(function() {
+	sktch = $('#'+sketchId).sketch();
+});
+//--></script>
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="expires" content="0">
+</head>
+<body id="bbody" marginwidth="0" leftmargin="0" marginheight="0" topmargin="0">
+<div data-role="page" id="smartphoneVerzeichnisseDialog" class="ui-page ui-page-theme-a ui-page-footer-fixed ui-page-active" data-url="smartphoneVerzeichnisseDialog" tabindex="0" style="padding-bottom: 53px; min-height: 683px;">
+	<div data-role="header" role="banner" class="ui-header ui-bar-inherit">
+		<h1 id="pfad" class="ui-title" role="heading" aria-level="1" style="text-align: left;margin-left:5%;margin-right:5%;">Signature</h1>
+	</div>
+	<div data-role="content" id="eintraege" class="ui-content" role="main">
+		<h5 id="beschreibung" class="ui-title" role="heading" aria-level="1" style="text-align: left;margin-left:5%;margin-right:5%;">You accept our conditions?<br /><br /></h5>
+		<div style="text-align:center;">
+			<canvas id="simple_sketch" width="300" height="140" style="border:solid 1px gray;background-color:white;"></canvas>
+		</div>
+		<div style="text-align:center;">
+			<a id="buttonReset" href="#" onclick="resetCanvas();return false;" style="margin-top:1em;" data-theme="b" data-role="button" data-icon="delete" data-iconpos="left" data-inline="true">Reset</a>
+		</div>
+	</div>
+	<div data-role="footer" class="ui-bar ui-footer ui-bar-b ui-footer-fixed slideup" style="height:45px;" data-position="fixed" data-theme="a" data-content-theme="b" role="contentinfo">
+		<a id="bars-button" data-icon="bars" class="ui-btn-left ui-link ui-btn ui-icon-bars ui-btn-icon-notext ui-shadow ui-corner-all" style="margin-top:5px;" href="#navpanel" data-iconpos="notext" data-role="button">Menu</a><a id="buttonSpeichern" href="#" onclick="saveCanvas();return false;" data-role="button" data-icon="check" data-theme="b" data-iconpos="left" style="margin-top:5px;float:right;margin-right:3em;" class="ui-link ui-btn ui-btn-b ui-icon-check ui-btn-icon-left ui-shadow ui-corner-all">Save</a>
+	</div>
+<div data-theme="b" data-dismissible="true" data-display="overlay" data-position="left" id="navpanel" data-role="panel" data-swipe-close="true" class="ui-panel ui-panel-position-left ui-panel-display-overlay ui-panel-closed ui-body-a ui-panel-animate">
+	<div class="ui-panel-inner"><div data-role="controlgroup" data-corners="false" class="ui-controlgroup ui-controlgroup-vertical"><div class="ui-controlgroup-controls ">
+		<a href="#" data-theme="b" data-role="button" data-icon="clock" class="ui-link ui-btn ui-btn-b ui-icon-clock ui-btn-icon-left ui-shadow ui-corner-all ui-first-child">Menu 1</a>
+		<a href="#" data-theme="b" data-role="button" data-icon="bullets" class="ui-link ui-btn ui-btn-b ui-icon-bullets ui-btn-icon-left ui-shadow ui-corner-all">Menu 2</a> 
+		<a href="#" data-theme="b" data-role="button" data-icon="grid" class="ui-link ui-btn ui-btn-b ui-icon-grid ui-btn-icon-left ui-shadow ui-corner-all">Menu 3</a>
+		<a href="#" data-theme="b" data-role="button" data-icon="calendar" class="ui-link ui-btn ui-btn-b ui-icon-calendar ui-btn-icon-left ui-shadow ui-corner-all">Menu 4</a>
+		<a href="#" data-theme="b" data-role="button" data-icon="tag" class="ui-link ui-btn ui-btn-b ui-icon-tag ui-btn-icon-left ui-shadow ui-corner-all">Menu 5</a> 
+		<a href="#" data-theme="b" data-role="button" data-icon="power" class="ui-link ui-btn ui-btn-b ui-icon-power ui-btn-icon-left ui-shadow ui-corner-all ui-last-child">log off</a> 
+	</div></div><div data-role="controlgroup" data-corners="false" style="bottom:0px;display:block;text-align:center;padding:0px;" class="ui-controlgroup ui-controlgroup-vertical"><div class="ui-controlgroup-controls ">
+		<a href="#" data-rel="close" data-theme="a" data-role="button" data-icon="back" class="ui-link ui-btn ui-btn-b ui-icon-back ui-btn-icon-left ui-shadow ui-corner-all ui-first-child ui-last-child">close</a>
+		<h4 style="color:yellow;">TTT</h4>
+		<h5 style="color:yellow;font-size:0.8em;">Version alpha 2015-05-21-1254</h5>
+		<p style="color:yellow;font-size:0.8em;">Copyright © XXX 2015<br><br></p>	
+	</div></div></div>
+	
+</div> 	
+<div class="ui-loader ui-corner-all ui-body-b ui-loader-default"><span class="ui-icon-loading"></span><h1>loading</h1></div><div class="ui-panel-dismiss"></div></div>
+</body></html>
