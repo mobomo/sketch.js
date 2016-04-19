@@ -60,6 +60,7 @@
         source code</a>.</p>
       </article>
 
+
       <article class='example'>
         <h1>Simple Example</h1>
         
@@ -123,6 +124,29 @@
             });
           </script>
         </div>
+      </article>
+
+      <article class='info'>
+        <h1>Events</h1>
+
+        <p>Sketch.js emits custom events that can be used to coordinate other code.  
+        <ul>
+          <li>'stroke-start' signals the beginning of an action.  The action object is carried
+            as extra data.</li>
+          <li>'stroke-end' signals the end of an action.  The action object is carried
+            as extra data.</li>
+          <li>'stroke-extend' signals an additional point was added to the current action.  The point is carried
+            as extra data.</li>
+        </ul></p>
+        <p>Sketch.js also listens for two custome that can be used to manipulate the drawing from outside code.  
+        <ul>
+          <li>'clear' clears the canvas and the Sketch object of all actions. There is no extra data.</li>
+          <li>'load' adds a list of actions to the Sketch object and redraws them to the canvas.</li>
+        </ul></p>
+        <p>All of these events are triggered on the canvas itself, in the DOM.</p>        
+        <p>An example of using the 'load' trigger. Wrap actions array in another array.<br>
+        `$('#sketch').trigger('load', [actions]);`
+        </p>
       </article>
 
       <article class='info'>
