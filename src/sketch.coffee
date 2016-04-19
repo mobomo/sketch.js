@@ -4,10 +4,10 @@
 # using HTML5 Canvas. It supports multiple browsers including mobile 
 # devices (albeit with performance penalties).
 (($)->
-  # ### jQuery('#mycanvas').sketch(options)
-  #
-  # Given an ID selector for a `<canvas>` element, initialize the specified
-  # canvas as a drawing canvas. See below for the options that may be passed in.
+# ### jQuery('#mycanvas').sketch(options)
+#
+# Given an ID selector for a `<canvas>` element, initialize the specified
+# canvas as a drawing canvas. See below for the options that may be passed in.
   $.fn.sketch = (key, args...)->
     $.error('Sketch.js can only be called on one element at a time.') if this.length > 1
     sketch = this.data('sketch')
@@ -66,9 +66,11 @@
       @size = @options.defaultSize
       @tool = @options.defaultTool
       @actions = []
-      @action = []
+      @action = null
 
       @canvas.bind 'click mousedown mouseup mousemove mouseleave mouseout touchstart touchmove touchend touchcancel', @onEvent
+      @canvas.bind 'load', @onLoad
+      @canvas.bind 'clear', @onClear
 
       # ### Tool Links
       #
@@ -94,10 +96,10 @@
             sketch.download $(this).attr('data-download')
           false
 
-    # ### sketch.download(format)
-    #
-    # Cause the browser to open up a new window with the Data URL of the current
-    # canvas. The `format` parameter can be either `png` or `jpeg`.
+# ### sketch.download(format)
+#
+# Cause the browser to open up a new window with the Data URL of the current
+# canvas. The `format` parameter can be either `png` or `jpeg`.
     download: (format)->
       format or= "png"
       format = "jpeg" if format == "jpg"
@@ -105,19 +107,19 @@
 
       window.open @el.toDataURL(mime)
 
-    # ### sketch.set(key, value)
-    #
-    # *Internal method.* Sets an arbitrary instance variable on the Sketch instance
-    # and triggers a `changevalue` event so that any appropriate bindings can take
-    # place.
+# ### sketch.set(key, value)
+#
+# *Internal method.* Sets an arbitrary instance variable on the Sketch instance
+# and triggers a `changevalue` event so that any appropriate bindings can take
+# place.
     set: (key, value)->
       this[key] = value
       @canvas.trigger("sketch.change#{key}", value)
 
-    # ### sketch.startPainting()
-    #
-    # *Internal method.* Called when a mouse or touch event is triggered 
-    # that begins a paint stroke. 
+# ### sketch.startPainting()
+#
+# *Internal method.* Called when a mouse or touch event is triggered
+# that begins a paint stroke.
     startPainting: ->
       @painting = true
       @action = {
@@ -127,20 +129,20 @@
         events: []
       }
 
-    # ### sketch.stopPainting()
-    #
-    # *Internal method.* Called when the mouse is released or leaves the canvas.
+# ### sketch.stopPainting()
+#
+# *Internal method.* Called when the mouse is released or leaves the canvas.
     stopPainting: ->
       @actions.push @action if @action
       @painting = false
       @action = null
       @redraw()
-    
-    # ### sketch.onEvent(e)
-    #
-    # *Internal method.* Universal event handler for the canvas. Any mouse or 
-    # touch related events are passed through this handler before being passed
-    # on to the individual tools.
+
+# ### sketch.onEvent(e)
+#
+# *Internal method.* Universal event handler for the canvas. Any mouse or
+# touch related events are passed through this handler before being passed
+# on to the individual tools.
     onEvent: (e)->
       if e.originalEvent && e.originalEvent.targetTouches
         e.pageX = e.originalEvent.targetTouches[0].pageX
@@ -149,11 +151,31 @@
       e.preventDefault()
       false
 
-    # ### sketch.redraw()
-    #
-    # *Internal method.* Redraw the sketchpad from scratch using the aggregated
-    # actions that have been stored as well as the action in progress if it has
-    # something renderable.
+# ### sketch.onLoad(e, points)
+#
+# handles 'load' event, adding actions to Sketch
+    onLoad: (e, actions)->
+      sketch = $(this).data('sketch');
+      sketch.actions = sketch.actions.concat(actions)
+      sketch.redraw()
+      e.preventDefault()
+      false
+
+# ### sketch.onClear(e)
+#
+# handles 'load' event, adding actions to Sketch
+    onClear: (e)->
+      sketch = $(this).data('sketch');
+      sketch.actions = []
+      sketch.redraw()
+      e.preventDefault()
+      false
+
+# ### sketch.redraw()
+#
+# *Internal method.* Redraw the sketchpad from scratch using the aggregated
+# actions that have been stored as well as the action in progress if it has
+# something renderable.
     redraw: ->
       @el.width = @canvas.width()
       @context = @el.getContext '2d'
@@ -173,7 +195,7 @@
   #
   # Tools can be added simply by adding a new key to the `$.sketch.tools` object.
   $.sketch = { tools: {} }
-  
+
   # ## marker
   #
   # The marker is the most basic drawing tool. It will draw a stroke of the current
@@ -183,14 +205,19 @@
       switch e.type
         when 'mousedown', 'touchstart'
           @startPainting()
+          @canvas.trigger("stroke-start", @action)
         when 'mouseup', 'mouseout', 'mouseleave', 'touchend', 'touchcancel'
+          if @action
+            @canvas.trigger("stroke-end", @action)
           @stopPainting()
 
       if @painting
-        @action.events.push
+        itm =
           x: e.pageX - @canvas.offset().left
           y: e.pageY - @canvas.offset().top
           event: e.type
+        @action.events.push itm
+        @canvas.trigger("stroke-extend", itm)
 
         @redraw()
 
@@ -198,7 +225,7 @@
       @context.lineJoin = "round"
       @context.lineCap = "round"
       @context.beginPath()
-      
+
       @context.moveTo action.events[0].x, action.events[0].y
       for event in action.events
         @context.lineTo event.x, event.y
