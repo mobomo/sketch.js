@@ -182,6 +182,7 @@
     onEvent: (e)->
       switch e.type
         when 'mousedown', 'touchstart'
+          @stopPainting() if @painting
           @startPainting()
         when 'mouseup', 'mouseout', 'mouseleave', 'touchend', 'touchcancel'
           @stopPainting()
